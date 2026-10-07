@@ -1,0 +1,26 @@
+# 🚀 NASA Open Science Data Repository (OSDR) - Reference Datasets
+
+This repository integrates theoretical biological parameters and scientific rationale derived from open-access datasets curated by the NASA Open Science Data Repository (OSDR).
+
+---
+
+## 📂 Referenced Datasets
+
+### 1. NASA OSDR OSD-514
+* **Title:** Artificial gravity partially protects space-induced neurological deficits in Drosophila melanogaster
+* **Platform:** Multi-use Variable-g Platform (MVP-Fly-01) aboard the International Space Station (ISS)
+* **Assay Types:** RNA Sequencing (RNA-Seq), Protein Expression Profiling (Mass Spectrometry)
+* **Key Findings Used:** Used as a conceptual model for spaceflight-induced neurological stress, glial phenotypes, and central nervous system (CNS) adaptation pathways under altered gravity.
+* **Official URL:** [https://osdr.nasa.gov/bio/repo/data/studies/OSD-514/](https://osdr.nasa.gov/bio/repo/data/studies/OSD-514/)
+
+### 2. NASA OSDR OSD-611 / OSD-612
+* **Title:** Bulk RNA sequencing and single nuclei transcriptomics and epigenomics of brain tissue from spaceflight missions
+* **Organism:** Mus musculus (Mouse Brain Tissue)
+* **Assay Types:** Single-cell RNA Sequencing, Epigenomics
+* **Key Findings Used:** Serves as the theoretical reference for space radiation stress on neuroinflammation, BDNF regulation, and cellular DNA repair pathway response.
+* **Official URL:** [https://osdr.nasa.gov/bio/repo/data/studies/OSD-612](https://osdr.nasa.gov/bio/repo/data/studies/OSD-612)
+
+---
+
+## 🔬 Data Utilization Statement
+The datasets above are cited as the primary academic and empirical foundation for **AstroHelix**. Data parameters within the prototype simulation represent conceptual modeling values derived from these studies.
