@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroHelix - Integrated AI Bio-Resilience Framework</title>
+  <!-- Chart.js & FontAwesome vector icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-navy: #0a1128;
+      --card-navy: #101f42;
+      --border-navy: #1c3366;
+      --accent-cyan: #00f2fe;
+      --accent-blue: #0077ff;
+      --accent-purple: #8a2be2;
+      --text-main: #f0f6fc;
+      --text-sub: #8b949e;
+      --glow-blue: rgba(0, 242, 254, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-navy);
+      color: var(--text-main);
+      padding: 12px;
+      min-height: 100vh;
+    }
+
+    /* Header Bar */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: var(--card-navy);
+      border: 1px solid var(--border-navy);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px var(--glow-blue);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand i {
+      font-size: 26px;
+      color: var(--accent-cyan);
+    }
+
+    .brand h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-badge {
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Flow Step Navigation Indicator */
+    .flow-stepper {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+
+    .flow-pill {
+      background: var(--card-navy);
+      border: 1px solid var(--border-navy);
+      color: var(--text-sub);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .flow-pill.active {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.08);
+      font-weight: bold;
+    }
+
+    /* Interactive Recording Controls */
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 130px;
+      background: linear-gradient(135deg, var(--accent-blue), #0052cc);
+      color: #ffffff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Dashboard Layout Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--card-navy);
+      border: 1px solid var(--border-navy);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h3 {
+      font-size: 13px;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .card .sub-label {
+      font-size: 10px;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+      display: block;
+      font-style: italic;
+    }
+
+    /* System Integration Content Cards */
+    .integration-section {
+      background: var(--card-navy);
+      border: 1px solid var(--border-navy);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .integration-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .info-box {
+      background: rgba(10, 17, 40, 0.6);
+      border: 1px solid var(--border-navy);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .info-box h4 {
+      font-size: 12px;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-box p {
+      font-size: 11px;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+
+    .stat-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border-navy);
+      font-size: 12px;
+    }
+
+    canvas {
+      width: 100% !important;
+      max-height: 190px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-dna"></i>
+      <div>
+        <h1>ASTROHELIX</h1>
+        <p style="font-size: 11px; color: var(--text-sub);">AI-Assisted Integrated Bio-Resilience Framework</p>
+      </div>
+    </div>
+    <div class="status-badge">
+      <i class="fa-solid fa-circle-dot"></i> Prototype Simulation
+    </div>
+  </header>
+
+  <!-- Flowchart Steps Connected Header Bar -->
+  <div class="flow-stepper">
+    <div class="flow-pill active"><i class="fa-solid fa-database"></i> 1. NASA Data</div>
+    <div class="flow-pill active"><i class="fa-solid fa-wave-square"></i> 2. Early Signals</div>
+    <div class="flow-pill active"><i class="fa-solid fa-brain"></i> 3. Neural Risk</div>
+    <div class="flow-pill active"><i class="fa-solid fa-shield-halved"></i> 4. Resilience</div>
+    <div class="flow-pill active"><i class="fa-solid fa-microscope"></i> 5. Research Targets</div>
+    <div class="flow-pill active"><i class="fa-solid fa-sliders"></i> 6. 3-Layer Strategies</div>
+    <div class="flow-pill active"><i class="fa-solid fa-chart-line"></i> 7. Bio-Simulation</div>
+    <div class="flow-pill active"><i class="fa-solid fa-arrows-split-up-and-left"></i> 8. What-If</div>
+    <div class="flow-pill active"><i class="fa-solid fa-gauge-high"></i> 9. Evidence Meter</div>
+  </div>
+
+  <!-- Interactive Demo Controls for Video Recording -->
+  <div class="controls">
+    <button onclick="triggerSolarEvent()"><i class="fa-solid fa-sun"></i> High Vulnerability Scenario</button>
+    <button onclick="applyCountermeasure()"><i class="fa-solid fa-shield-virus"></i> Hypothetical Countermeasure Scenario</button>
+    <button onclick="resetDashboard()"><i class="fa-solid fa-rotate-left"></i> Reset Baseline Data</button>
+  </div>
+
+  <!-- Core Analytics Dashboard Grid -->
+  <div class="dashboard-grid">
+
+    <!-- Step 1 & 7: NASA Data & Bio-Temporal Simulation -->
+    <div class="card">
+      <h3><i class="fa-solid fa-chart-line"></i> Bio-Temporal Risk Profile (180 Days)</h3>
+      <span class="sub-label">Prototype Simulation — Illustrative Trend</span>
+      <canvas id="timeSeriesChart"></canvas>
+    </div>
+
+    <!-- Step 3: Neuronal Vulnerability Prediction -->
+    <div class="card">
+      <h3><i class="fa-solid fa-brain"></i> Neuronal Vulnerability Index</h3>
+      <span class="sub-label">Model Estimated Risk Indicator</span>
+      <canvas id="gaugeChart"></canvas>
+      <ul class="stat-list">
+        <li class="stat-item"><span>Status:</span><span id="riskStatus" style="font-weight:bold; color:var(--accent-cyan);">Moderate Risk Scenario (64%)</span></li>
+        <li class="stat-item"><span>NASA Reference:</span><span style="color:var(--text-sub);">OSDR OSD-611 / OSD-514</span></li>
+      </ul>
+    </div>
+
+    <!-- Step 4: Comparative Biological Resilience -->
+    <div class="card">
+      <h3><i class="fa-solid fa-shield-halved"></i> Human vs Tardigrade Adaptation</h3>
+      <span class="sub-label">Conceptual Comparative Score — Not Experimental Measurement</span>
+      <canvas id="radarChart"></canvas>
+    </div>
+
+    <!-- Step 2 & 5: Early Warning Signals & Pathway Targets -->
+    <div class="card">
+      <h3><i class="fa-solid fa-microscope"></i> Pathway Biomarker Status</h3>
+      <span class="sub-label">Illustrative Model Output (Prototype Simulation)</span>
+      <canvas id="biomarkerChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Step 6, 8, 9: Integrated Strategies, What-If & Evidence Meter -->
+  <div class="integration-section">
+    <h3 style="color: var(--accent-cyan); text-transform: uppercase; font-size: 14px; margin-bottom: 10px;">
+      <i class="fa-solid fa-cubes"></i> Integrated System Framework & Evidence Assessment
+    </h3>
+    <div class="integration-grid">
+      
+      <div class="info-box">
+        <h4><i class="fa-solid fa-sliders"></i> Three Adaptive Strategies</h4>
+        <p><strong>Environmental:</strong> Habitat shielding & exposure optimization.<br><strong>Biological:</strong> DNA repair pathway hypotheses.<br><strong>Personalized:</strong> Profile-based simulated adjustments.</p>
+      </div>
+
+      <div class="info-box">
+        <h4><i class="fa-solid fa-arrows-split-up-and-left"></i> What-If Universe</h4>
+        <p>Models hypothetical mission scenarios, comparing standard exposure against biological protection concepts.</p>
+      </div>
+
+      <div class="info-box">
+        <h4><i class="fa-solid fa-gauge-high"></i> Evidence Assessment Meter</h4>
+        <p><strong>Research Evidence:</strong> NASA OSDR Open Datasets.<br><strong>Prediction Confidence:</strong> Not yet validated<br><strong>Validation Status:</strong> Prototype / Research Simulation</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Chart 1: Bio-Temporal Simulation Line Chart
+    const ctxTime = document.getElementById('timeSeriesChart').getContext('2d');
+    const timeSeriesChart = new Chart(ctxTime, {
+      type: 'line',
+      data: {
+        labels: ['Day 1', 'Day 30', 'Day 60', 'Day 90', 'Day 120', 'Day 150', 'Day 180'],
+        datasets: [
+          {
+            label: 'Neural Risk Index',
+            data: [15, 24, 38, 52, 62, 68, 75],
+            borderColor: '#00f2fe',
+            backgroundColor: 'rgba(0, 242, 254, 0.1)',
+            fill: true,
+            tension: 0.3
+          },
+          {
+            label: 'Illustrative DNA-Response Index',
+            data: [12, 18, 30, 45, 58, 64, 70],
+            borderColor: '#8a2be2',
+            borderDash: [4, 4],
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#8b949e', font: { size: 10 } } } },
+        scales: {
+          x: { ticks: { color: '#8b949e', font: { size: 9 } }, grid: { color: 'rgba(28, 51, 102, 0.4)' } },
+          y: { ticks: { color: '#8b949e', font: { size: 9 } }, grid: { color: 'rgba(28, 51, 102, 0.4)' } }
+        }
+      }
+    });
+
+    // Chart 2: Neuronal Vulnerability Gauge Meter
+    const ctxGauge = document.getElementById('gaugeChart').getContext('2d');
+    const gaugeChart = new Chart(ctxGauge, {
+      type: 'doughnut',
+      data: {
+        labels: ['Vulnerability', 'Safety Margin'],
+        datasets: [{
+          data: [64, 36],
+          backgroundColor: ['#ff3b30', '#1c3366'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        circumference: 180,
+        rotation: -90,
+        cutout: '78%',
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    // Chart 3: Tardigrade Comparative Radar
+    const ctxRadar = document.getElementById('radarChart').getContext('2d');
+    const radarChart = new Chart(ctxRadar, {
+      type: 'radar',
+      data: {
+        labels: ['DNA Protection', 'Radiation', 'Stress Response', 'Cell Resilience', 'Neural Stability'],
+        datasets: [
+          {
+            label: 'Human Baseline',
+            data: [35, 25, 45, 40, 50],
+            borderColor: '#ff3b30',
+            backgroundColor: 'rgba(255, 59, 48, 0.15)'
+          },
+          {
+            label: 'Tardigrade Adaptation',
+            data: [95, 90, 85, 95, 80],
+            borderColor: '#00f2fe',
+            backgroundColor: 'rgba(0, 242, 254, 0.15)'
+          }
+        ]
+      },
+      options: {
+        scales: { r: { grid: { color: 'rgba(28, 51, 102, 0.6)' }, ticks: { display: false } } },
+        plugins: { legend: { labels: { color: '#8b949e', font: { size: 10 } } } }
+      }
+    });
+
+    // Chart 4: Biomarkers Expression Bar (Updated Label)
+    const ctxBio = document.getElementById('biomarkerChart').getContext('2d');
+    const biomarkerChart = new Chart(ctxBio, {
+      type: 'bar',
+      data: {
+        labels: ['BRCA1', 'TP53', 'BDNF', 'IL-6', 'APOE'],
+        datasets: [{
+          label: 'Illustrative Expression Shift (%)',
+          data: [48, -22, -38, 62, 18],
+          backgroundColor: ['#00f2fe', '#0077ff', '#8a2be2', '#ff3b30', '#00f2fe']
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8b949e', font: { size: 9 } }, grid: { display: false } },
+          y: { ticks: { color: '#8b949e', font: { size: 9 } }, grid: { color: 'rgba(28, 51, 102, 0.4)' } }
+        }
+      }
+    });
+
+    // Deterministic Simulation Interactions for Video Recording
+    function triggerSolarEvent() {
+      timeSeriesChart.data.datasets[0].data = [15, 42, 75, 90, 94, 96, 99];
+      gaugeChart.data.datasets[0].data = [90, 10];
+      document.getElementById('riskStatus').innerText = 'HIGH VULNERABILITY SCENARIO (90%)';
+      document.getElementById('riskStatus').style.color = '#ff3b30';
+      timeSeriesChart.update();
+      gaugeChart.update();
+    }
+
+    function applyCountermeasure() {
+      timeSeriesChart.data.datasets[0].data = [15, 20, 24, 28, 30, 32, 35];
+      gaugeChart.data.datasets[0].data = [35, 65];
+      document.getElementById('riskStatus').innerText = 'HYPOTHETICAL SCENARIO (35%)';
+      document.getElementById('riskStatus').style.color = '#00f2fe';
+      timeSeriesChart.update();
+      gaugeChart.update();
+    }
+
+    function resetDashboard() {
+      timeSeriesChart.data.datasets[0].data = [15, 24, 38, 52, 62, 68, 75];
+      gaugeChart.data.datasets[0].data = [64, 36];
+      document.getElementById('riskStatus').innerText = 'Moderate Risk Scenario (64%)';
+      document.getElementById('riskStatus').style.color = '#00f2fe';
+      timeSeriesChart.update();
+      gaugeChart.update();
+    }
+  </script>
+</body>
+</html>
