@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AstroHelix</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#f6f7f9;--surf:#ffffff;--ink:#14181f;--ink2:#3b4452;--mut:#6a7484;--line:#dfe3ea;--acc:#3b6fd4;--accbg:#e8eefb;
+--c1:#3b6fd4;--c2:#c26a14;--c3:#1a9e8f;--ok:#1f7a4d;--okbg:#e3f3ea;--warn:#8a6100;--warnbg:#fbf0d4;--ser:#b4531a;--serbg:#fbe6d8;--crit:#b3261e;--critbg:#fbe0de;--grid:#e6e9ef;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101319;--surf:#181c24;--ink:#eef1f6;--ink2:#c5ccd8;--mut:#8f99a9;--line:#2a313d;--acc:#7da3f2;--accbg:#1d2740;
+--c1:#5b8bec;--c2:#c97524;--c3:#26a595;--ok:#62c996;--okbg:#17302400;--warn:#e3b64d;--warnbg:#33290f;--ser:#f0985a;--serbg:#38210f;--crit:#f27b72;--critbg:#3a1714;--grid:#252c37;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101319;--surf:#181c24;--ink:#eef1f6;--ink2:#c5ccd8;--mut:#8f99a9;--line:#2a313d;--acc:#7da3f2;--accbg:#1d2740;
+--c1:#5b8bec;--c2:#c97524;--c3:#26a595;--ok:#62c996;--okbg:#173024;--warn:#e3b64d;--warnbg:#33290f;--ser:#f0985a;--serbg:#38210f;--crit:#f27b72;--critbg:#3a1714;--grid:#252c37;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.wrap{max-width:760px;margin:0 auto}
+header{padding-top:14px}
+h1{font:700 22px/1.2 "Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+h1 span{color:var(--acc)}
+.sub{color:var(--mut);font-size:13px;margin:2px 0 10px}
+h2{font:600 18px/1.3 "Space Grotesk",Inter,system-ui,sans-serif;margin:18px 0 6px;text-wrap:balance}
+h3{font:600 14px/1.3 Inter,system-ui,sans-serif;margin:14px 0 4px}
+p{margin:6px 0;color:var(--ink2)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:8px 0;border-bottom:1px solid var(--line);scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:500;color:var(--ink2);text-decoration:none;border:1px solid var(--line);background:var(--surf)}
+nav a.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;min-width:0}
+.banner{border-radius:12px;padding:10px 12px;font-size:13px;margin:10px 0;border:1px solid}
+.banner.demo{background:var(--warnbg);border-color:var(--warn);color:var(--ink)}
+.banner.real{background:var(--okbg);border-color:var(--ok);color:var(--ink)}
+.banner b{font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:10px;padding:10px;min-width:0}
+.stat .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.stat .v{font:600 22px/1.2 "Space Grotesk",Inter,sans-serif;margin-top:2px}
+.stat .n{font-size:12px;color:var(--mut)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.L0{background:var(--okbg);color:var(--ok)}.L1{background:var(--warnbg);color:var(--warn)}.L2{background:var(--serbg);color:var(--ser)}.L3{background:var(--critbg);color:var(--crit)}
+.t-nasa{background:var(--okbg);color:var(--ok)}.t-model{background:var(--accbg);color:var(--acc)}.t-hyp{background:var(--warnbg);color:var(--warn)}
+svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+svg text{font:11px Inter,system-ui,sans-serif;fill:var(--mut)}
+svg .lab{fill:var(--ink2)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--ink2);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 5px;border-bottom:1px solid var(--line);white-space:nowrap}
+td:first-child{white-space:normal}
+td .badge{font-size:11px;padding:2px 7px}
+p .badge{white-space:normal}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600}
+td.w{white-space:normal}
+label{display:block;font-size:13px;font-weight:500;margin-top:10px}
+label small{font-weight:400;color:var(--mut)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.val{float:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+select,button,input[type=file]{font:inherit;font-size:14px;color:var(--ink);background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:9px 12px;max-width:100%}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.note{font-size:12.5px;color:var(--mut)}
+.warnbox{border-left:3px solid var(--warn);background:var(--warnbg);padding:8px 10px;border-radius:6px;font-size:13px;color:var(--ink);margin:8px 0}
+.errbox{border-left:3px solid var(--crit);background:var(--critbg);padding:8px 10px;border-radius:6px;font-size:13px;color:var(--ink);margin:8px 0}
+ul{margin:6px 0;padding-left:20px;color:var(--ink2)}li{margin:3px 0}
+code,pre{font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border-radius:6px}
+pre{padding:8px;overflow-x:auto;margin:6px 0}
+#tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:5px 8px;border-radius:7px;max-width:240px;display:none}
+.bar{height:14px;border-radius:7px;background:var(--bg);display:flex;overflow:hidden;gap:2px}
+.bar span{display:block;height:100%}
+.busy{padding:30px 0;text-align:center;color:var(--mut)}
+footer{margin-top:24px;font-size:12px;color:var(--mut)}
+</style>
+</head><body>
+<div class="wrap">
+<header>
+<h1>Astro<span>Helix</span></h1>
+<div class="sub">Space-radiation neural risk · computational research prototype · NASA Space Apps 2026</div>
+</header>
+<nav id="nav"></nav>
+<div id="tip"></div>
+<main id="view"><div class="busy">Loading…</div></main>
+<footer>AstroHelix is a computational research prototype. It is not a medical device and gives no diagnosis, prescription or individual health advice. Not endorsed by NASA.</footer>
+</div>
+<script>
+//#core-start
+/* AstroHelix core: parsing, statistics, NeuroEcho, dose mapping, simulation.
+   Pure functions, no DOM. Tested against Python (scipy / scikit-learn). */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mean=a=>{let s=0;for(let i=0;i<a.length;i++)s+=a[i];return s/a.length;};
+const sdv=(a,dd=1)=>{if(a.length<=dd)return 0;const m=mean(a);let s=0;for(let i=0;i<a.length;i++)s+=(a[i]-m)*(a[i]-m);return Math.sqrt(s/(a.length-dd));};
+const clip=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+/* ---------- special functions ---------- */
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,t=x+5.5;t-=(x+0.5)*Math.log(t);let s=1.000000000190015;for(let j=0;j<6;j++)s+=c[j]/++y;return -t+Math.log(2.5066282746310005*s/x);}
+function betacf(a,b,x){const EPS=3e-14,FP=1e-300;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FP)d=FP;d=1/d;let h=d;for(let m=1;m<=300;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FP)d=FP;c=1+aa/c;if(Math.abs(c)<FP)c=FP;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FP)d=FP;c=1+aa/c;if(Math.abs(c)<FP)c=FP;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(x,a,b){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function welch(a,b){const n1=a.length,n2=b.length,m1=mean(a),m2=mean(b);const v1=sdv(a,1),v2=sdv(b,1);const s1=v1*v1/n1,s2=v2*v2/n2,se2=s1+s2;
+  if(!(se2>0))return {t:0,p:1,lfc:m2-m1};const t=(m2-m1)/Math.sqrt(se2);const df=se2*se2/((s1*s1)/(n1-1)+(s2*s2)/(n2-1));
+  return {t,p:ibeta(df/(df+t*t),df/2,0.5),lfc:m2-m1};}
+function bh(p){const n=p.length,o=Array.from(p.keys()).sort((i,j)=>p[i]-p[j]),r=new Float64Array(n);let m=1;for(let k=n-1;k>=0;k--){const v=p[o[k]]*n/(k+1);m=Math.min(m,v);r[o[k]]=Math.min(1,m);}return r;}
+function ranks(a){const o=Array.from(a.keys()).sort((i,j)=>a[i]-a[j]),r=new Float64Array(a.length);let i=0;while(i<o.length){let j=i;while(j+1<o.length&&a[o[j+1]]===a[o[i]])j++;const v=(i+j)/2+1;for(let k=i;k<=j;k++)r[o[k]]=v;i=j+1;}return r;}
+function pearson(a,b){const ma=mean(a),mb=mean(b);let sab=0,saa=0,sbb=0;for(let i=0;i<a.length;i++){sab+=(a[i]-ma)*(b[i]-mb);saa+=(a[i]-ma)**2;sbb+=(b[i]-mb)**2;}return sab/Math.sqrt(saa*sbb);}
+const spearman=(a,b)=>pearson(ranks(a),ranks(b));
+
+/* ---------- symmetric eigen-decomposition (cyclic Jacobi) ---------- */
+function eigSym(A,n){const a=A.map(r=>Float64Array.from(r)),V=[];for(let i=0;i<n;i++){const r=new Float64Array(n);r[i]=1;V.push(r);}
+  let scale=0;for(let i=0;i<n;i++)scale+=a[i][i]*a[i][i];scale+=1e-12;
+  for(let sw=0;sw<80;sw++){let off=0;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)off+=a[i][j]*a[i][j];if(off<1e-26*scale)break;
+    for(let p=0;p<n-1;p++)for(let q=p+1;q<n;q++){const apq=a[p][q];if(Math.abs(apq)<1e-300)continue;
+      const th=(a[q][q]-a[p][p])/(2*apq),t=(th>=0?1:-1)/(Math.abs(th)+Math.sqrt(th*th+1)),c=1/Math.sqrt(t*t+1),s=t*c;
+      for(let k=0;k<n;k++){const x=a[k][p],y=a[k][q];a[k][p]=c*x-s*y;a[k][q]=s*x+c*y;}
+      for(let k=0;k<n;k++){const x=a[p][k],y=a[q][k];a[p][k]=c*x-s*y;a[q][k]=s*x+c*y;}
+      for(let k=0;k<n;k++){const x=V[k][p],y=V[k][q];V[k][p]=c*x-s*y;V[k][q]=s*x+c*y;}}}
+  const lam=new Float64Array(n);for(let i=0;i<n;i++)lam[i]=Math.max(0,a[i][i]);return {lam,Q:V};}
+
+/* ---------- kernel ridge with leave-one-out alpha choice (equivalent to RidgeCV on standardised X) ---------- */
+const ALPHAS=Array.from({length:15},(_,k)=>Math.pow(10,-1+4*k/14));
+function prepSplit(X,tr,te){const ntr=tr.length,nte=te.length,p=X.length;
+  const K=Array.from({length:ntr},()=>new Float64Array(ntr)),Kte=Array.from({length:nte},()=>new Float64Array(ntr));
+  const vtr=new Float64Array(ntr),vte=new Float64Array(nte);
+  for(let g=0;g<p;g++){const row=X[g];let m=0;for(let i=0;i<ntr;i++)m+=row[tr[i]];m/=ntr;let v=0;for(let i=0;i<ntr;i++){const d=row[tr[i]]-m;v+=d*d;}let s=Math.sqrt(v/ntr);if(s<1e-12)s=1;
+    for(let i=0;i<ntr;i++)vtr[i]=(row[tr[i]]-m)/s;for(let t=0;t<nte;t++)vte[t]=(row[te[t]]-m)/s;
+    for(let i=0;i<ntr;i++){const vi=vtr[i],Ki=K[i];for(let j=i;j<ntr;j++)Ki[j]+=vi*vtr[j];}
+    for(let t=0;t<nte;t++){const vt=vte[t],Kt=Kte[t];for(let i=0;i<ntr;i++)Kt[i]+=vt*vtr[i];}}
+  for(let i=0;i<ntr;i++)for(let j=0;j<i;j++)K[i][j]=K[j][i];
+  return {tr,te,eig:eigSym(K,ntr),Kte};}
+function fitSplit(sp,y){const {tr,eig}=sp,n=tr.length,{lam,Q}=eig;let yb=0;for(let i=0;i<n;i++)yb+=y[tr[i]];yb/=n;
+  const yc=new Float64Array(n);for(let i=0;i<n;i++)yc[i]=y[tr[i]]-yb;
+  const q=new Float64Array(n);for(let j=0;j<n;j++){let s=0;for(let i=0;i<n;i++)s+=Q[i][j]*yc[i];q[j]=s;}
+  let best=Infinity,ba=ALPHAS[0];
+  for(const a of ALPHAS){let mse=0;for(let i=0;i<n;i++){let yh=0,h=1/n;const Qi=Q[i];for(let j=0;j<n;j++){const w=lam[j]/(lam[j]+a);yh+=Qi[j]*w*q[j];h+=Qi[j]*Qi[j]*w;}const e=(yc[i]-yh)/(1-h);mse+=e*e;}
+    if(mse<best){best=mse;ba=a;}}
+  const alpha=new Float64Array(n);for(let i=0;i<n;i++){let s=0;for(let j=0;j<n;j++)s+=Q[i][j]*q[j]/(lam[j]+ba);alpha[i]=s;}
+  return {yb,alpha,a:ba};}
+function cvPredict(preps,y,n){const pred=new Float64Array(n);for(const sp of preps){const f=fitSplit(sp,y);for(let t=0;t<sp.te.length;t++){let s=f.yb;const Kt=sp.Kte[t];for(let i=0;i<sp.tr.length;i++)s+=Kt[i]*f.alpha[i];pred[sp.te[t]]=s;}}return pred;}
+const r2score=(y,p)=>{const m=mean(y);let sse=0,sst=0;for(let i=0;i<y.length;i++){sse+=(y[i]-p[i])**2;sst+=(y[i]-m)**2;}return 1-sse/sst;};
+const zscore=a=>{const m=mean(a),s=sdv(a,0);return Float64Array.from(a,v=>(v-m)/s);};
+
+function makeFolds(n,k,seed,ids){let f;if(ids)f=ids.slice();else{const rng=mulberry32(seed||1),o=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=Math.floor(rng()*(i+1));[o[i],o[j]]=[o[j],o[i]];}f=new Array(n);o.forEach((idx,pos)=>f[idx]=pos%k);}
+  const out=[];for(let c=0;c<k;c++){const te=[],tr=[];for(let i=0;i<n;i++)(f[i]===c?te:tr).push(i);if(te.length)out.push({tr,te});}return out;}
+
+function neuroecho(X,y,opts={}){const n=y.length,k=opts.k||5,B=opts.nPerm==null?200:opts.nPerm;
+  const folds=makeFolds(n,k,opts.seed,opts.foldIds);const preps=folds.map(f=>prepSplit(X,f.tr,f.te));
+  const pred=cvPredict(preps,y,n);const r2=r2score(y,pred);let sse=0;for(let i=0;i<n;i++)sse+=(y[i]-pred[i])**2;const rmse=Math.sqrt(sse/n);const rho=spearman(y,pred);
+  const rng=mulberry32((opts.seed||1)+99),perm=[];
+  for(let b=0;b<B;b++){const yp=Float64Array.from(y);for(let i=n-1;i>0;i--){const j=Math.floor(rng()*(i+1));const t=yp[i];yp[i]=yp[j];yp[j]=t;}perm.push(r2score(yp,cvPredict(preps,yp,n)));}
+  const pPerm=(1+perm.filter(v=>v>=r2).length)/(B+1);
+  const all=Array.from({length:n},(_,i)=>i),full=prepSplit(X,all,[]);const ff=fitSplit(full,y);
+  const coef=new Float64Array(X.length);for(let g=0;g<X.length;g++){const row=X[g];let m=0;for(let i=0;i<n;i++)m+=row[i];m/=n;let v=0;for(let i=0;i<n;i++)v+=(row[i]-m)**2;let s=Math.sqrt(v/n);if(s<1e-12)s=1;let w=0;for(let i=0;i<n;i++)w+=ff.alpha[i]*(row[i]-m)/s;coef[g]=w;}
+  return {pred,r2,rmse,rho,perm,pPerm,coef,alpha:ff.a};}
+
+/* ---------- differential expression ---------- */
+function diffExpr(X,dose){const c=[],ir=[];dose.forEach((d,i)=>(d===0?c:ir).push(i));
+  const lfc=new Float64Array(X.length),t=new Float64Array(X.length),p=new Float64Array(X.length);
+  for(let g=0;g<X.length;g++){const r=welch(c.map(i=>X[g][i]),ir.map(i=>X[g][i]));lfc[g]=r.lfc;t[g]=r.t;p[g]=Number.isFinite(r.p)?r.p:1;}
+  return {lfc,t,p,fdr:bh(p)};}
+
+/* ---------- parsing ---------- */
+function parseTable(text){text=text.replace(/^﻿/,'');const first=text.split(/\r?\n/,1)[0];
+  const cand=[',','\t',';'];let d=',',best=-1;for(const c of cand){const n=first.split(c).length;if(n>best){best=n;d=c;}}
+  const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}
+    else if(ch==='"')q=true;else if(ch===d){row.push(cur);cur='';}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cur);cur='';if(row.length>1||row[0]!=='')rows.push(row);row=[];}
+    else cur+=ch;}
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}return rows;}
+function parseDose(s){s=String(s==null?'':s).trim().toLowerCase();if(!s)return NaN;
+  if(/sham|control|unirrad|non.?irrad|^0(\.0+)?$|^0\s*(gy|cgy|mgy)$/.test(s))return 0;
+  const m=s.match(/(\d*\.?\d+)\s*(cgy|mgy|gy)/);if(m){const v=+m[1];return m[2]==='cgy'?v/100:m[2]==='mgy'?v/1000:v;}
+  if(/^\d*\.?\d+$/.test(s))return +s;return NaN;}
+const normName=s=>String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]+/g,'');
+function buildDataset(exprText,metaText){const E=parseTable(exprText),M=parseTable(metaText),notes=[];
+  if(E.length<10||E[0].length<5)throw new Error('Expression file: need a header row, genes as rows and at least 4 sample columns.');
+  if(M.length<5)throw new Error('Metadata file: need a header row and one row per sample.');
+  const head=E[0].map(s=>String(s).trim()),body=E.slice(1);
+  const keep=[],annot=[];for(let j=1;j<head.length;j++){let ok=0,tot=0;for(let r=0;r<Math.min(200,body.length);r++){const v=body[r][j];if(v===undefined||v==='')continue;tot++;if(Number.isFinite(+v))ok++;}if(tot&&ok/tot>=0.9)keep.push(j);else annot.push(j);}
+  const symCol=annot.find(j=>/symbol|gene.?name/i.test(head[j]));
+  if(symCol!==undefined)notes.push("Gene labels taken from the '"+head[symCol]+"' column.");
+  const mh=M[0].map(s=>String(s).trim()),Mb=M.slice(1);
+  /* dose column: prefer a header containing 'dose', else any column whose values parse as doses */
+  let di=-1;const scoreCol=i=>{const vals=Mb.map(r=>parseDose(r[i]));const ok=vals.filter(Number.isFinite);return {n:ok.length,distinct:new Set(ok).size,frac:ok.length/Mb.length};};
+  const cands=mh.map((h,i)=>i).filter(i=>{const s=scoreCol(i);return s.frac>=0.8&&s.distinct>=2;});
+  di=cands.find(i=>/dose/i.test(mh[i]));if(di===undefined)di=cands.find(i=>/factor|group|condition|radiation/i.test(mh[i]));if(di===undefined)di=cands[0];
+  if(di===undefined)throw new Error("Metadata file: could not find a dose column. Add a column such as dose_gy with values like 0, 0.3, 0.6 (or text such as '0.3 Gy', 'Sham').");
+  notes.push("Dose taken from metadata column '"+mh[di]+"'.");
+  const ci=mh.findIndex((s,i)=>i!==di&&/cogn|recogn|discrim|nor_|^di$/i.test(s));
+  const nameCols=mh.map((h,i)=>i).filter(i=>/name|^id$|sample|source/i.test(mh[i]));if(!nameCols.length)nameCols.push(0);
+  const mi=new Map();Mb.forEach(r=>nameCols.forEach(c=>{const k=normName(r[c]);if(k&&!mi.has(k))mi.set(k,r);}));
+  const cols=[],samples=[],dose=[],cog=[],miss=[];
+  for(const j of keep){const r=mi.get(normName(head[j]));if(!r){miss.push(head[j]);continue;}const dv=parseDose(r[di]);if(!Number.isFinite(dv)){miss.push(head[j]);continue;}cols.push(j);samples.push(head[j]);dose.push(dv);cog.push(ci>=0?+r[ci]:NaN);}
+  if(miss.length)notes.push(miss.length+' expression column(s) had no matching metadata row and were skipped: '+miss.slice(0,4).join(', ')+(miss.length>4?'…':''));
+  if(samples.length<8)throw new Error('Only '+samples.length+' samples matched between the two files (need at least 8). Sample names must be identical in both files.');
+  if(dose.filter(d=>d===0).length<2||dose.filter(d=>d>0).length<2)throw new Error('Need at least 2 control (dose 0) and 2 irradiated samples.');
+  const genes=[],X=[];let mx=-Infinity;
+  for(const r of body){const id=(symCol!==undefined&&String(r[symCol]||'').trim())||(r[0]||'').trim();if(!id)continue;const v=new Float64Array(cols.length);let bad=false;for(let k=0;k<cols.length;k++){const x=+r[cols[k]];if(!Number.isFinite(x)){bad=true;break;}v[k]=x;if(x>mx)mx=x;}if(!bad){genes.push(id);X.push(v);}}
+  if(genes.length<10)throw new Error('Fewer than 10 usable genes after removing rows with missing values.');
+  if(mx>50){for(const v of X)for(let k=0;k<v.length;k++)v[k]=Math.log2(Math.max(0,v[k])+1);notes.push('Values looked like counts (max '+mx.toFixed(0)+'), so log2(x + 1) was applied.');}
+  const hasCog=cog.every(Number.isFinite);if(ci>=0&&!hasCog)notes.push('Cognition column has missing values, so it was not used.');
+  const dv=[...new Set(dose)].sort((a,b)=>a-b);notes.push('Dose groups found: '+dv.join(', ')+' Gy; '+samples.length+' samples, '+genes.length+' genes.');
+  return {genes,samples,X,dose,cog:hasCog&&ci>=0?cog:null,notes};}
+
+/* ---------- pathways ---------- */
+const PATHWAYS={"DNA damage response":["Tp53","Atm","Cdkn1a","Gadd45a","Chek2"],"DNA repair":["Brca1","Rad51","Xrcc1","Parp1","Mgmt"],"Oxidative stress defense":["Sod2","Nfe2l2","Gpx1","Cat","Hmox1"],"Epigenetic regulation (5hmC/TET)":["Tet1","Tet2","Tet3","Dnmt3a","Dnmt1"],"Synaptic plasticity":["Bdnf","Arc","Fos","Egr1","Camk2a","Gria1","Grin2b","Syn1"],"Neuroinflammation":["Il1b","Tnf","Gfap","Aif1","Il6"],"Apoptosis":["Bax","Bcl2","Casp3"],"Chromatin protection":["Hmgn1","Hmgb1","H2afx","Hmgb2"]};
+const GENE2PW={};for(const [pw,gs] of Object.entries(PATHWAYS))for(const g of gs)GENE2PW[g.toUpperCase()]=pw;
+
+/* ---------- NVI, dose mapping, simulation ---------- */
+function groupsFromNVI(dose,nvi){const m=new Map();dose.forEach((d,i)=>{if(!m.has(d))m.set(d,[]);m.get(d).push(nvi[i]);});
+  return Array.from(m.keys()).sort((a,b)=>a-b).map(d=>({dose:d,n:m.get(d).length,mean:mean(m.get(d)),sd:sdv(m.get(d),1)}));}
+function nviAtDose(G,d){if(d<=0)return {v:G[0].dose===0?G[0].mean:0,sd:G[0].sd,zone:'control'};const last=G[G.length-1];
+  if(d>=last.dose)return {v:last.mean,sd:last.sd,zone:'above'};
+  for(let i=0;i<G.length-1;i++){if(d<=G[i+1].dose){const f=(d-G[i].dose)/(G[i+1].dose-G[i].dose);return {v:G[i].mean+f*(G[i+1].mean-G[i].mean),sd:G[i].sd+f*(G[i+1].sd-G[i].sd),zone:i===0?'below':'inside'};}}
+  return {v:last.mean,sd:last.sd,zone:'above'};}
+function simulate(G,o){const days=[],mol=[],neu=[],lo=[],hi=[],dose=[],zone=[];
+  const cum=t=>o.rate*Math.max(t,0)*(1-o.shield)*o.gyPerSv*o.sens/1000;
+  const f=t=>{const r=nviAtDose(G,cum(t));return {v:clip(r.v,0,100)*(1-o.protect),sd:r.sd*(1-o.protect),zone:r.zone};};
+  for(let d=0;d<=180;d++){const m=f(d),n=f(d-o.lag);days.push(d);dose.push(cum(d));mol.push(m.v);neu.push(n.v);zone.push(m.zone);
+    lo.push(clip(n.v-1.96*n.sd,0,100));hi.push(clip(n.v+1.96*n.sd,0,100));}
+  return {days,dose,mol,neu,lo,hi,zone};}
+
+/* ---------- full pipeline ---------- */
+function computeAll(ds,targetMode,opts={}){
+  const n=ds.samples.length;let raw,label;
+  if(targetMode==='cognition'&&ds.cog){raw=ds.cog.map(v=>-v);label='cognition score (inverted)';}
+  else if(targetMode==='dose'){raw=ds.dose;label='dose (continuous)';}
+  else{raw=ds.dose.map(d=>d>0?1:0);label='irradiated vs control (binary)';}
+  const y=zscore(Float64Array.from(raw));
+  const de=diffExpr(ds.X,ds.dose);
+  const echo=neuroecho(ds.X,y,opts);
+  const ctrl=[];ds.dose.forEach((d,i)=>{if(d===0)ctrl.push(echo.pred[i]);});
+  const mu0=mean(ctrl);const gm=groupsFromNVI(ds.dose,Array.from(echo.pred));const mumax=Math.max(...gm.map(g=>g.mean));
+  const span=(mumax-mu0)>1e-9?(mumax-mu0):1;const degenerate=!((mumax-mu0)>1e-9);
+  const nvi=Array.from(echo.pred,v=>100*(v-mu0)/span);
+  const groups=groupsFromNVI(ds.dose,nvi);
+  const order=Array.from(echo.coef.keys()).sort((a,b)=>Math.abs(echo.coef[b])-Math.abs(echo.coef[a]));
+  const signals=order.slice(0,12).map(i=>({gene:ds.genes[i],coef:echo.coef[i],pw:GENE2PW[ds.genes[i].toUpperCase()]||'-'}));
+  const volcano=ds.genes.map((g,i)=>({gene:g,lfc:de.lfc[i],nlp:-Math.log10(de.p[i]+1e-300),sig:de.fdr[i]<0.1}));
+  const pwRows=[];let mapped=0;
+  for(const [pw,gs] of Object.entries(PATHWAYS)){const idx=[];for(const g of gs){const i=ds.genes.findIndex(x=>x.toUpperCase()===g.toUpperCase());if(i>=0)idx.push(i);}mapped+=idx.length;
+    if(idx.length)pwRows.push({pw,n:idx.length,m:mean(idx.map(i=>Math.abs(de.lfc[i])))});}
+  const mx=Math.max(...pwRows.map(r=>r.m),1e-9);pwRows.forEach(r=>r.hp=r.m/mx);
+  const agg={};signals.forEach(s=>{});const pwW={};order.slice(0,200).forEach(i=>{const pw=GENE2PW[ds.genes[i].toUpperCase()];if(pw)pwW[pw]=(pwW[pw]||0)+Math.abs(echo.coef[i]);});
+  const pwAgg=Object.entries(pwW).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([pw,v])=>({pw,v}));
+  const bins=16,lo=Math.min(...echo.perm),hi=Math.max(...echo.perm),w=(hi-lo)/bins||1,counts=new Array(bins).fill(0);echo.perm.forEach(v=>{counts[Math.min(bins-1,Math.floor((v-lo)/w))]++;});
+  const edges=Array.from({length:bins+1},(_,i)=>lo+i*w);
+  return {ds,label,y,de,echo,nvi,groups,degenerate,signals,volcano,pwRows,mapped,pwAgg,perm:{counts,edges},foldN:5};}
+
+//#core-end
+</script>
+<script>
+const LEVELS=[{n:'Baseline',c:'L0',i:'●',t:0},{n:'Early change',c:'L1',i:'▲',t:25},{n:'Elevated',c:'L2',i:'◆',t:50},{n:'High',c:'L3',i:'■',t:75}];
+const levelOf=v=>{let l=LEVELS[0];for(const x of LEVELS)if(v>=x.t)l=x;return l;};
+const badge=v=>{const l=levelOf(v);return `<span class="badge ${l.c}">${l.i} ${l.n}</span>`;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const f1=v=>(Math.abs(v)<0.05?0:v).toFixed(0);
+const fx=(v,d=2)=>Number.isFinite(v)?v.toFixed(d):'–';
+const VIEWS=[['home','Overview'],['study','OSD-611'],['data','Data'],['echo','NeuroEcho'],['index','Risk index'],['gap','Resilience gap'],['mission','Mission'],['evidence','Evidence']];
+const S={ds:null,demo:false,target:'cognition',R:null,err:'',busy:false,
+ sim:{rate:1.8,q:3.7,shield:0,sens:1,lag:14,protect:0.4,shieldB:0.3}};
+function toDS(d){return {genes:d.genes,samples:d.samples,X:d.X.map(r=>Float64Array.from(r)),dose:d.dose,cog:d.cog,notes:[]};}
+function recompute(){S.busy=true;render();setTimeout(()=>{try{S.R=computeAll(S.ds,S.target,{seed:7,nPerm:300});S.err='';}catch(e){S.err=e.message;}S.busy=false;render();},30);}
+const DEMO={"genes": ["Tp53", "Atm", "Cdkn1a", "Gadd45a", "Chek2", "Brca1", "Rad51", "Xrcc1", "Parp1", "Mgmt", "Sod2", "Nfe2l2", "Gpx1", "Cat", "Hmox1", "Tet1", "Tet2", "Tet3", "Dnmt3a", "Dnmt1", "Bdnf", "Arc", "Fos", "Egr1", "Camk2a", "Gria1", "Grin2b", "Syn1", "Il1b", "Tnf", "Gfap", "Aif1", "Il6", "Bax", "Bcl2", "Casp3", "Hmgn1", "Hmgb1", "H2afx", "Hmgb2", "Gene000", "Gene001", "Gene002", "Gene003", "Gene004", "Gene005", "Gene006", "Gene007", "Gene008", "Gene009", "Gene010", "Gene011", "Gene012", "Gene013", "Gene014", "Gene015", "Gene016", "Gene017", "Gene018", "Gene019", "Gene020", "Gene021", "Gene022", "Gene023", "Gene024", "Gene025", "Gene026", "Gene027", "Gene028", "Gene029", "Gene030", "Gene031", "Gene032", "Gene033", "Gene034", "Gene035", "Gene036", "Gene037", "Gene038", "Gene039", "Gene040", "Gene041", "Gene042", "Gene043", "Gene044", "Gene045", "Gene046", "Gene047", "Gene048", "Gene049", "Gene050", "Gene051", "Gene052", "Gene053", "Gene054", "Gene055", "Gene056", "Gene057", "Gene058", "Gene059"], "samples": ["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S11", "S12", "S13", "S14", "S15", "S16", "S17", "S18", "S19", "S20", "S21", "S22", "S23", "S24", "S25", "S26", "S27", "S28", "S29", "S30", "S31", "S32"], "dose": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9], "cog": [0.1847, 0.3447, 0.2639, 0.2749, 0.2298, 0.3216, 0.4251, 0.3346, 0.0251, -0.0688, 0.0448, 0.0314, 0.0907, 0.0452, 0.0034, -0.0167, 0.2616, 0.3862, 0.3083, 0.3015, 0.2962, 0.3411, 0.2486, 0.2443, 0.1728, 0.3571, 0.3297, 0.3301, 0.3018, 0.3815, 0.2404, 0.3714], "X": [[7.8971, 6.677, 7.451, 7.4389, 6.7707, 7.3332, 7.6565, 7.4474, 7.6655, 7.9463, 7.7015, 7.7891, 7.4609, 7.8477, 7.2764, 7.8554, 7.6855, 7.5924, 7.9776, 8.5326, 8.3129, 7.6526, 8.1414, 7.6885, 8.2098, 8.3473, 7.53, 8.2205, 7.8524, 8.0318, 7.8031, 7.7312], [8.5994, 8.8462, 8.3116, 8.6752, 8.2239, 7.6077, 8.3918, 8.4766, 8.3993, 8.6866, 8.8056, 8.3237, 7.9782, 8.5131, 8.5004, 8.4292, 9.1217, 9.4682, 8.6205, 9.082, 9.1953, 9.0028, 9.1702, 8.6282, 9.3429, 9.8419, 9.4344, 8.7884, 9.2648, 9.5436, 9.265, 8.8936], [7.5672, 8.1053, 8.0148, 7.5591, 8.4407, 8.0728, 7.6423, 8.2315, 8.2343, 7.7695, 8.2333, 8.5995, 8.5214, 8.509, 8.441, 8.555, 8.6731, 9.2991, 8.7832, 8.9473, 9.0792, 8.3402, 8.5423, 9.2632, 9.3547, 9.2171, 9.4671, 8.9435, 9.2841, 9.0328, 9.4167, 8.6961], [7.6379, 7.1886, 7.7549, 7.6599, 7.8801, 7.3631, 8.0025, 9.1019, 7.75, 8.3658, 8.1777, 8.3867, 7.4771, 7.8603, 8.3982, 8.1893, 9.1309, 8.4519, 8.6039, 9.6755, 8.4334, 8.2056, 8.5898, 8.5243, 9.3437, 9.1721, 8.8934, 8.9971, 9.9211, 9.5217, 8.157, 9.0095], [7.5011, 7.1594, 7.973, 7.586, 7.6027, 7.3037, 7.3078, 7.416, 8.0557, 7.8315, 7.5541, 8.1509, 7.5972, 7.6303, 7.3588, 7.4086, 7.6828, 7.0456, 8.2481, 8.1854, 7.9503, 8.2408, 8.0953, 8.0198, 7.4503, 8.3009, 8.5951, 8.7749, 8.9181, 8.8394, 7.9792, 7.5565], [8.405, 8.7035, 8.3573, 8.4617, 7.8739, 8.5318, 8.2571, 8.524, 8.7008, 8.5181, 8.6848, 8.5817, 8.7729, 8.7407, 8.3637, 8.3363, 9.2878, 8.6953, 9.0187, 8.8523, 8.5344, 8.4014, 8.7362, 8.7602, 9.079, 8.4504, 8.6977, 8.7831, 9.4049, 8.0487, 9.0491, 8.6791], [8.1476, 8.4049, 8.8764, 8.4282, 8.4767, 8.4202, 8.0831, 8.519, 8.4611, 8.2781, 8.5706, 8.5231, 8.7491, 8.556, 8.3711, 9.0465, 9.0834, 9.2608, 8.9413, 8.7539, 8.6712, 8.619, 9.0937, 8.7661, 8.4944, 9.044, 8.5798, 9.001, 8.5635, 8.587, 9.1014, 8.9922], [8.181, 8.6333, 7.4096, 8.5403, 7.6836, 7.7157, 7.8826, 7.4225, 8.5899, 8.3362, 7.9228, 8.1075, 7.5554, 8.0508, 8.4855, 7.5378, 8.1879, 8.4715, 8.6985, 8.8682, 8.2617, 8.0606, 8.5229, 8.2028, 8.5105, 9.0417, 9.273, 8.6409, 8.5229, 8.8351, 8.0053, 8.6188], [8.6236, 8.0074, 7.8435, 7.7075, 6.911, 8.0141, 8.377, 
+7.5391, 8.1874, 8.2223, 7.444, 8.3273, 8.3858, 8.0559, 7.9429, 8.2262, 7.5618, 8.193, 8.4634, 7.7074, 8.5089, 7.9391, 7.3912, 8.0561, 7.9682, 8.4533, 7.9447, 8.623, 8.0283, 8.4451, 8.1354, 8.2], [6.8002, 6.5519, 6.2941, 7.1181, 6.9856, 6.5859, 6.8312, 6.372, 6.5447, 6.6338, 7.0645, 7.0595, 6.5993, 7.1883, 7.1928, 6.9628, 7.4296, 7.03, 7.0193, 7.2764, 7.1199, 7.3271, 6.6477, 7.5565, 7.0181, 7.2701, 6.8601, 7.4441, 7.7141, 7.6795, 7.6213, 6.7516], [7.3627, 7.1689, 7.9434, 7.5751, 7.5343, 7.6942, 7.2147, 7.2148, 7.7772, 8.2444, 8.1778, 8.295, 8.3838, 7.5597, 7.8083, 8.12, 7.4406, 7.784, 8.281, 8.3552, 8.3642, 7.906, 7.8712, 8.2678, 8.0321, 8.3203, 8.6666, 7.9639, 7.9078, 8.1778, 8.3983, 8.3215], [9.4106, 8.6311, 8.9377, 9.2607, 8.9068, 8.7454, 8.8134, 8.9016, 9.6432, 9.3343, 9.7639, 10.3054, 9.5847, 10.1073, 9.7357, 9.2986, 9.4649, 9.2613, 9.8352, 9.2004, 10.0827, 9.738, 8.8754, 9.8093, 10.3163, 9.5305, 10.1527, 9.0822, 9.8252, 9.2074, 9.9646, 9.1383], [7.959, 8.592, 7.6384, 8.0966, 7.8779, 7.7062, 8.0595, 8.4036, 7.9614, 8.5752, 8.4864, 7.9023, 8.8778, 9.0239, 7.9772, 8.9842, 8.2365, 8.2186, 8.7569, 8.3543, 8.4063, 8.7259, 8.7012, 8.5063, 7.9819, 7.9621, 8.9074, 8.0763, 8.4822, 8.1151, 8.4348, 8.0145], [6.2134, 6.5016, 6.5275, 6.9795, 6.0895, 6.5574, 6.5177, 6.7628, 7.2411, 6.8996, 7.135, 6.9511, 7.1682, 6.994, 6.7732, 7.0506, 7.0472, 7.7649, 6.7601, 7.0782, 7.4993, 6.1729, 6.3393, 6.4834, 7.1051, 8.0347, 7.3184, 7.5049, 7.0305, 6.2996, 6.3592, 7.4928], [8.8894, 9.7099, 8.8281, 9.7285, 9.868, 9.0754, 8.9765, 9.6466, 9.4541, 10.1255, 9.3949, 10.1262, 9.8005, 9.6411, 9.4525, 9.9053, 9.0228, 9.6393, 9.5584, 9.9724, 9.3121, 10.2658, 9.605, 9.2669, 10.3901, 10.5217, 9.8747, 9.5316, 9.8745, 9.6796, 9.819, 10.4418], [8.5812, 8.6291, 8.4684, 8.8248, 8.8065, 8.3405, 8.567, 9.375, 7.8248, 7.7066, 8.5622, 7.807, 7.3758, 8.1081, 7.5968, 7.5496, 8.6139, 8.4859, 8.1829, 8.2899, 8.2863, 8.9152, 8.2226, 8.33, 9.2082, 8.3016, 9.0516, 8.9707, 8.4768, 7.9883, 8.6888, 8.7657], [10.1333, 10.5103, 10.5587, 9.7391, 10.5811, 10.1168, 9.9101, 9.9966, 10.0249, 9.7941, 8.887, 9.5067, 9.3905, 9.4753, 9.3916, 8.8983, 10.3832, 9.7792, 9.909, 9.856, 9.8218, 10.348, 10.1944, 9.8721, 9.7466, 9.9135, 10.4465, 10.1347, 10.1897, 9.954, 10.0178, 10.1839], [8.6267, 7.762, 7.8173, 8.531, 8.1052, 8.0099, 7.8584, 7.5161, 7.1754, 7.6344, 6.9828, 7.7287, 6.8083, 7.071, 7.5493, 7.1624, 8.2702, 7.8029, 7.6119, 7.356, 7.6007, 7.6599, 7.5014, 8.1705, 7.7905, 7.3277, 8.9317, 7.7479, 7.6231, 8.446, 8.4704, 7.6595], [7.1886, 7.9093, 7.3838, 7.2556, 7.4938, 7.8934, 7.0523, 7.4043, 6.1115, 7.4604, 7.4174, 7.0684, 6.6403, 7.0417, 6.1192, 6.7437, 7.0372, 7.0749, 7.2033, 7.3635, 7.6995, 7.7582, 7.5694, 7.2081, 7.7359, 7.4577, 7.9517, 7.1954, 6.5715, 7.3218, 8.2916, 7.7028], [6.8616, 6.7083, 6.6763, 6.3726, 6.5505, 6.5682, 6.3274, 6.1608, 5.8297, 6.2054, 6.1592, 6.0682, 6.0322, 6.8615, 6.084, 6.1877, 7.2097, 6.5709, 6.5724, 6.8748, 7.1102, 6.6409, 6.6294, 6.5841, 6.0983, 6.912, 6.464, 5.9326, 6.5019, 5.907, 6.2007, 6.5597], [9.7002, 8.7844, 9.3677, 9.5213, 9.7992, 9.5761, 9.4083, 9.3549, 8.2716, 8.8053, 8.2657, 8.6281, 8.3599, 8.613, 8.4852, 9.0963, 9.0604, 9.4162, 9.327, 9.4829, 9.4414, 9.4483, 9.6045, 8.8012, 9.2884, 8.8539, 9.4094, 8.8898, 8.9921, 9.2521, 9.8169, 9.5303], [11.0652, 10.209, 9.7781, 10.4258, 10.4284, 10.9136, 11.3229, 10.1088, 10.1308, 9.9564, 9.8148, 9.5869, 10.2399, 9.5912, 9.4583, 9.3838, 10.0482, 10.7396, 10.4128, 10.6171, 10.6447, 10.1681, 10.9502, 10.2193, 10.8308, 9.9632, 10.7046, 10.2567, 10.5895, 10.2772, 9.8105, 10.1846], [7.4028, 6.6312, 6.3681, 6.8792, 7.0553, 6.8573, 6.9011, 7.4822, 6.0311, 6.1178, 5.6578, 5.9408, 5.7697, 5.5339, 6.4119, 5.8049, 6.9613, 7.6806, 7.3116, 7.4009, 7.541, 7.395, 6.6449, 7.0483, 7.4734, 6.8542, 7.1972, 7.2883, 7.6887, 7.5597, 
+7.4986, 7.1188], [7.5426, 7.2716, 7.7779, 7.5307, 7.0512, 7.7208, 7.2682, 7.5652, 5.6943, 6.346, 6.1184, 6.0544, 5.6681, 7.2353, 6.4852, 6.3719, 7.7039, 7.3139, 7.43, 6.8177, 7.377, 7.1806, 7.4582, 7.4195, 6.8241, 6.6617, 7.0008, 7.5874, 7.5047, 7.4371, 6.649, 6.4144], [8.4822, 8.3611, 8.6737, 8.5384, 8.146, 8.2191, 8.648, 8.6233, 7.5675, 8.4981, 7.6987, 7.7841, 7.3417, 7.6965, 8.0524, 7.8458, 8.5059, 8.735, 8.5216, 7.8821, 7.4074, 9.3777, 8.8219, 8.5763, 7.9461, 8.1087, 9.0708, 7.5967, 8.4827, 8.8469, 8.6463, 8.8604], [8.0074, 6.7818, 6.6406, 7.2657, 7.6303, 7.0741, 7.5368, 6.9839, 5.681, 6.7047, 6.8559, 6.7916, 6.0465, 5.9367, 5.9817, 6.0756, 7.3351, 7.3479, 6.5667, 7.1781, 7.1302, 7.1719, 7.0917, 7.099, 7.3326, 7.1701, 7.2485, 6.9026, 7.3082, 7.0703, 6.4293, 7.3389], [8.0536, 7.6461, 7.6463, 7.8035, 7.6876, 7.5009, 7.1018, 8.3744, 6.1575, 6.7034, 7.139, 6.9941, 7.0073, 7.212, 7.4324, 6.8695, 8.7103, 7.3747, 7.7132, 7.5463, 7.4953, 7.8022, 8.1737, 7.4809, 7.4382, 7.9413, 7.9198, 8.3907, 8.0892, 7.7558, 7.6142, 7.8048], [7.1724, 7.6267, 7.5397, 7.5688, 7.4626, 8.1702, 7.8939, 7.9781, 6.4268, 6.3935, 6.7391, 6.8747, 6.6165, 6.8043, 7.2538, 6.7992, 7.2696, 7.5004, 7.325, 7.6571, 7.1986, 7.5601, 7.8271, 7.6602, 7.2882, 7.3931, 7.6937, 7.7954, 7.9431, 7.5458, 7.1891, 8.1489], [8.3427, 8.2831, 7.8554, 8.0776, 8.3031, 8.557, 8.2403, 7.1152, 8.507, 8.709, 9.0338, 8.8547, 9.4051, 9.0625, 9.0142, 8.9106, 8.0258, 8.8545, 8.7269, 8.3698, 8.7745, 8.6391, 8.3714, 8.4504, 8.6175, 8.822, 8.5959, 8.8454, 8.0081, 8.6252, 8.1437, 8.5353], [8.8502, 9.2573, 9.1333, 9.053, 9.1435, 9.6484, 8.7394, 9.4232, 9.0311, 9.3901, 9.6056, 9.2792, 9.5648, 9.7836, 9.0857, 9.5209, 9.3334, 8.8424, 9.4084, 9.2375, 10.0033, 9.1391, 10.0886, 9.2598, 10.3768, 9.9241, 9.8978, 9.9163, 9.9788, 10.2061, 10.3324, 9.5707], [7.0974, 7.8674, 8.3203, 8.1513, 8.0879, 7.9039, 7.8311, 7.9412, 8.6419, 7.881, 8.7483, 8.0127, 8.3803, 8.2505, 8.3172, 8.126, 8.0023, 8.3836, 8.0349, 9.3197, 8.3315, 8.1548, 8.2421, 8.0101, 7.787, 8.5955, 8.7974, 8.0536, 8.6116, 8.2403, 8.6626, 8.7656], [9.0765, 8.6551, 9.2488, 8.7569, 9.0581, 9.1661, 8.8348, 8.4805, 9.501, 8.8897, 8.9646, 8.9135, 9.5273, 9.2036, 8.4537, 9.5333, 9.9351, 9.885, 9.0182, 9.2782, 9.4433, 9.5071, 9.2449, 8.812, 9.6595, 9.6399, 8.9617, 9.2156, 9.4611, 9.4072, 9.6004, 9.6684], [7.5455, 7.0865, 7.8209, 8.0636, 8.2908, 7.5683, 7.5934, 8.0989, 8.5202, 8.1293, 8.2544, 7.7657, 8.1568, 7.6969, 7.9114, 7.9612, 7.7618, 7.24, 7.6448, 8.0912, 7.9702, 7.7693, 8.1029, 8.1491, 8.4431, 7.8987, 8.192, 7.9683, 7.8049, 7.6376, 8.1374, 7.8342], [8.2995, 8.2127, 8.2037, 8.9747, 8.0095, 8.2473, 8.0906, 8.2995, 8.5365, 8.962, 8.1037, 8.6106, 9.0659, 8.4077, 8.5094, 8.2415, 7.8369, 8.7959, 9.1558, 8.6446, 8.1878, 8.8258, 8.8056, 9.0928, 9.349, 8.9802, 9.2325, 8.3298, 9.3915, 9.1115, 9.4569, 9.4085], [5.8142, 5.5224, 5.1512, 5.8064, 5.9249, 5.4595, 6.1388, 5.9091, 6.2167, 5.8138, 5.4851, 6.3915, 6.2283, 6.0526, 5.9306, 5.9636, 6.1919, 6.1322, 5.528, 6.5633, 5.7885, 6.1048, 6.1544, 6.3218, 5.9218, 6.9487, 6.7717, 6.6935, 6.9053, 6.2224, 5.4319, 6.61], [6.9611, 6.3388, 6.5287, 6.6447, 5.9261, 6.3019, 6.3501, 7.1161, 6.4707, 7.2675, 6.7373, 6.1583, 7.4434, 6.3843, 6.9315, 7.2996, 6.649, 6.4582, 7.1947, 6.8957, 6.4603, 6.4441, 6.7163, 7.1667, 6.9197, 7.2787, 7.6399, 7.4175, 7.5043, 7.462, 6.4882, 7.4523], [8.7618, 8.3923, 8.2562, 8.4042, 8.8019, 8.3703, 8.5399, 8.5966, 9.2069, 8.8925, 8.962, 9.4918, 8.823, 9.2124, 8.6212, 9.0911, 9.1754, 9.2569, 8.9633, 8.8159, 9.0919, 8.9535, 9.5145, 9.443, 8.9297, 9.6048, 9.2312, 9.4556, 9.1594, 8.8479, 9.7427, 9.5136], [6.757, 7.1995, 7.0122, 7.2797, 7.6401, 7.9101, 7.3139, 7.9081, 7.9904, 7.4524, 7.0377, 7.9341, 7.7593, 8.4354, 8.1011, 7.8596, 8.3303, 7.433, 7.8007, 7.6861, 8.4114, 7.9221, 6.6882, 8.2121, 7.6345, 
+8.2582, 7.8324, 7.9847, 8.1538, 8.0338, 7.6555, 8.4485], [8.5849, 8.8169, 8.4082, 9.2436, 8.6728, 8.7046, 8.7262, 8.277, 8.2878, 8.789, 8.8473, 9.2044, 8.8329, 8.3364, 8.8947, 8.9904, 9.1518, 8.9569, 8.3688, 9.2346, 8.5847, 8.9913, 8.2624, 9.0631, 8.6635, 9.3391, 9.5865, 9.3124, 8.515, 8.6155, 8.6563, 9.1728], [8.6128, 8.6339, 8.7667, 8.7735, 9.1523, 8.5148, 8.6472, 7.9137, 8.2523, 8.4938, 8.3373, 8.8433, 9.043, 8.5895, 8.5609, 8.5369, 8.9108, 8.7328, 9.0073, 9.0105, 9.0445, 9.1159, 8.8929, 8.9059, 9.6844, 9.0853, 9.3936, 9.0344, 8.8861, 8.9194, 8.8148, 9.0759], [9.1739, 9.7487, 9.2751, 9.7209, 9.4147, 9.6234, 9.1079, 9.3732, 10.244, 9.611, 9.6725, 9.4028, 9.6211, 8.9141, 9.0229, 9.4707, 9.6075, 9.1768, 9.2545, 9.1933, 9.254, 8.8994, 8.8178, 9.2904, 8.7106, 8.976, 9.0871, 8.9494, 9.4009, 9.161, 9.2884, 8.9627], [8.9844, 8.9318, 8.6415, 8.9313, 8.8693, 8.8591, 9.3611, 8.6624, 8.9492, 8.9496, 8.7199, 8.3939, 9.0431, 8.8926, 8.8179, 8.8084, 8.8073, 8.4865, 8.9012, 8.1675, 8.7889, 8.2739, 8.6739, 9.0471, 8.7056, 8.6281, 8.9753, 8.7009, 8.6521, 8.6569, 9.3234, 9.0265], [8.582, 9.215, 8.5454, 9.1655, 8.6069, 9.6805, 8.4075, 9.4242, 9.2768, 8.3749, 8.9119, 9.5015, 9.3935, 8.4154, 8.8137, 8.5848, 8.6368, 8.7706, 9.6396, 9.0417, 8.9159, 8.8777, 9.2279, 9.2366, 8.673, 9.5081, 8.6156, 8.8975, 9.1521, 9.5931, 8.8732, 9.0944], [8.0837, 8.2601, 8.2289, 7.9565, 8.0863, 8.1863, 7.8558, 8.4249, 7.1705, 7.5434, 8.3709, 8.015, 7.6402, 7.998, 8.246, 7.6701, 8.1345, 7.823, 7.8261, 7.8416, 8.2549, 7.4741, 7.7374, 8.0978, 7.4394, 7.3128, 8.0652, 7.8666, 7.8146, 7.9159, 7.5259, 8.8855], [7.1272, 6.782, 7.134, 7.8137, 7.2862, 7.4877, 7.1104, 7.9141, 7.3369, 6.8426, 7.549, 7.1502, 7.492, 7.3282, 7.3718, 7.3273, 6.9626, 6.7538, 7.621, 7.232, 7.3794, 7.1171, 6.5713, 6.8324, 7.7677, 7.0044, 7.1453, 6.7656, 7.0944, 7.1486, 7.2013, 7.253], [7.0443, 7.2404, 7.3581, 7.1953, 7.8548, 7.3168, 7.3012, 7.0151, 7.6041, 6.8862, 6.6781, 6.903, 7.4609, 6.8435, 7.6969, 7.236, 6.7132, 7.1636, 7.8679, 6.9427, 6.7852, 7.4229, 7.7007, 7.5992, 7.1285, 7.3091, 7.3572, 7.6543, 7.9954, 7.2057, 7.6981, 7.123], [7.1603, 7.2195, 7.6322, 7.173, 7.7973, 7.2942, 7.514, 7.4576, 7.3702, 7.5327, 7.8646, 8.5737, 7.0715, 7.5919, 7.4255, 7.1672, 7.5871, 7.1794, 7.4595, 7.9208, 6.7796, 7.5736, 7.6433, 7.1518, 7.6703, 7.61, 7.3648, 7.9111, 7.0293, 7.712, 7.4052, 7.1172], [6.7229, 7.1317, 6.3218, 6.777, 6.6856, 7.3956, 6.4537, 7.2155, 6.23, 6.965, 6.7967, 6.9763, 6.5978, 6.1607, 6.3024, 7.3022, 6.9171, 6.5397, 7.1568, 6.5808, 6.5827, 6.4165, 7.2529, 7.5274, 6.5029, 6.9413, 7.182, 7.5799, 6.0, 6.8884, 7.0646, 6.3206], [7.4895, 7.6734, 7.2162, 7.5661, 7.2079, 7.6317, 7.4749, 7.2876, 6.9239, 7.9961, 7.8074, 7.7272, 7.1866, 7.2965, 8.0037, 7.6798, 7.1212, 7.4356, 7.469, 7.3497, 7.0896, 7.8592, 7.6265, 7.3515, 6.8701, 7.2167, 7.4197, 7.7253, 7.2924, 7.8101, 7.4716, 7.1622], [7.4672, 7.3568, 7.8258, 7.9955, 8.366, 7.8753, 7.4746, 8.7036, 7.9895, 7.7885, 7.7891, 7.4079, 8.104, 8.0124, 8.438, 8.2679, 8.1864, 8.3232, 7.7836, 7.7281, 7.8663, 7.4479, 7.8343, 7.7694, 8.1192, 7.8803, 7.2178, 7.8967, 8.3821, 7.2443, 7.6212, 7.8933], [8.0398, 8.252, 7.7709, 8.336, 8.3765, 7.7897, 8.2434, 8.6122, 8.173, 8.3874, 8.4603, 8.1533, 8.5798, 8.3709, 7.8896, 8.4196, 8.5399, 8.5193, 8.0125, 8.3992, 8.7191, 8.3198, 8.654, 8.6951, 8.2275, 8.4718, 8.1392, 8.615, 8.2097, 8.0493, 8.233, 8.2168], [7.815, 7.2447, 7.4245, 7.7787, 7.8214, 7.6834, 8.5755, 8.0459, 7.6281, 7.9102, 8.1241, 7.7842, 7.0458, 7.6913, 7.6756, 8.4048, 7.0156, 8.2005, 7.6051, 7.9862, 7.5585, 7.7226, 8.0577, 7.6915, 8.0314, 7.6344, 7.5196, 7.5868, 7.4876, 7.6218, 8.1409, 7.2549], [6.0737, 6.6701, 6.4472, 6.5441, 6.5191, 5.8265, 6.1235, 5.151, 5.8693, 6.2954, 5.5382, 5.3621, 5.629, 6.1607, 6.4933, 6.9906, 6.5866, 5.5559, 5.2748, 6.1401, 6.4591, 5.5226, 
+5.9068, 5.9329, 6.1031, 6.0291, 6.2735, 6.4637, 6.1194, 6.3576, 6.7932, 5.7385], [8.127, 8.5977, 8.0084, 8.3331, 7.8433, 8.2723, 7.733, 8.189, 8.092, 8.0924, 8.4368, 8.3295, 7.747, 8.2672, 7.3634, 8.3052, 8.9222, 8.1464, 8.1394, 7.9847, 8.2547, 7.8065, 8.2002, 7.8712, 7.8186, 8.0114, 7.9476, 7.3617, 8.6966, 8.0193, 7.3771, 8.348], [8.3404, 8.5164, 7.9557, 7.2388, 8.2342, 8.3539, 8.6201, 8.0043, 8.1758, 8.409, 8.1585, 8.1819, 8.3584, 7.9206, 8.8236, 7.9463, 8.2817, 8.1536, 8.0211, 8.4561, 8.6225, 8.7781, 8.4721, 8.1114, 8.5701, 7.7624, 8.285, 8.4504, 8.4647, 7.8636, 7.742, 8.8472], [8.5471, 8.6892, 9.1271, 9.5348, 9.1202, 9.5408, 9.1992, 9.2846, 9.4634, 8.9867, 9.2215, 8.9816, 8.8939, 9.3461, 8.8285, 9.1434, 8.838, 9.0832, 8.9292, 9.4962, 9.1404, 9.1389, 9.688, 8.0967, 8.7179, 8.148, 9.1035, 9.2585, 9.3295, 9.1974, 8.7975, 9.7155], [8.5027, 8.201, 8.7399, 8.4202, 8.4341, 8.6634, 8.6667, 8.3026, 9.0282, 8.2383, 8.1977, 8.696, 8.6324, 8.6119, 8.443, 8.6015, 8.3893, 8.0091, 8.8432, 8.231, 8.5053, 8.8411, 8.5935, 9.5447, 8.0949, 8.3226, 8.6152, 9.0589, 8.4969, 8.0826, 8.9837, 8.2607], [7.67, 7.1269, 7.2029, 7.5315, 7.2892, 7.4606, 7.0289, 7.3183, 6.9776, 6.8143, 7.9737, 7.5181, 7.6797, 7.0199, 7.3485, 7.2865, 6.861, 7.5495, 7.1055, 7.2871, 6.8271, 7.7055, 7.6237, 7.4953, 7.0397, 7.1693, 7.7856, 7.261, 7.4513, 7.4071, 6.9664, 7.8914], [7.356, 7.247, 6.7114, 7.3938, 7.4597, 7.2957, 6.9879, 7.4351, 7.6678, 7.3551, 7.881, 7.5784, 7.5471, 7.7644, 7.0464, 7.0954, 7.4584, 7.4597, 7.8062, 7.679, 7.3397, 7.3551, 7.1825, 7.1516, 7.1215, 7.5964, 7.1156, 7.1566, 7.3369, 7.1022, 7.202, 6.5187], [9.9115, 10.0864, 10.1491, 9.3719, 10.8637, 10.0811, 10.091, 9.407, 10.2528, 10.1826, 9.9156, 10.1314, 10.4968, 9.9336, 9.7371, 10.5218, 10.1507, 9.9973, 10.8658, 10.1172, 10.0011, 10.1552, 9.9216, 10.1369, 10.1139, 9.8317, 9.9699, 10.1687, 10.1935, 10.263, 10.3333, 10.1452], [8.6698, 8.7124, 9.165, 8.1094, 8.9294, 9.9053, 8.1496, 9.3213, 8.1798, 8.9194, 9.359, 9.3089, 8.4692, 8.3299, 8.2801, 9.0326, 8.6436, 8.7812, 8.8686, 8.9207, 8.9636, 8.8188, 8.2128, 9.2837, 7.8125, 9.2058, 8.5619, 8.7033, 8.5892, 8.6423, 8.7638, 8.6731], [10.1427, 9.6423, 10.3151, 9.7914, 9.5978, 9.9976, 10.1555, 9.5212, 9.7453, 10.344, 9.495, 9.547, 9.9028, 9.4193, 8.9819, 9.2607, 9.9754, 10.0736, 10.0517, 9.9811, 9.4129, 10.0815, 10.2477, 9.6003, 10.1744, 9.7161, 9.9113, 9.9735, 9.3248, 10.358, 9.5456, 9.8098], [10.3037, 10.2946, 10.1508, 10.6383, 10.2424, 10.0038, 9.1357, 10.045, 10.0421, 9.8389, 9.8426, 10.3514, 10.5095, 10.807, 10.5437, 9.8962, 10.2335, 9.6666, 10.3996, 10.269, 9.9301, 10.107, 10.0562, 9.9211, 10.6062, 11.2308, 10.4323, 10.5144, 10.2002, 10.0218, 10.9127, 10.0163], [7.0488, 7.1551, 7.4036, 7.1797, 7.4045, 6.7536, 7.1615, 7.6765, 6.8352, 6.9633, 7.6766, 7.3384, 7.5709, 6.4136, 7.2476, 6.75, 6.7093, 7.3404, 7.6109, 6.6722, 6.8082, 6.9913, 7.1514, 6.7295, 7.9876, 7.4014, 7.0689, 7.013, 8.0099, 7.9805, 7.0228, 7.316], [7.9813, 8.1906, 8.8707, 8.1526, 8.2443, 7.9225, 8.1282, 8.6359, 8.1054, 7.9353, 8.1728, 9.0161, 8.4551, 8.1953, 8.4461, 8.5476, 8.4343, 7.7556, 8.4961, 8.3154, 8.687, 7.9139, 8.7587, 8.2148, 7.7878, 8.8571, 8.2067, 8.5196, 8.3308, 8.7725, 8.7765, 8.7799], [7.8903, 7.8664, 8.5295, 8.1226, 8.6228, 8.5169, 7.9595, 8.0925, 8.0579, 8.1447, 8.3847, 8.698, 8.9301, 8.115, 8.2586, 9.0061, 8.7732, 8.54, 7.6286, 8.1016, 8.5133, 8.2488, 9.1602, 8.4892, 8.5572, 8.0688, 8.0883, 8.2215, 8.2358, 8.3743, 8.5891, 8.5408], [8.0803, 8.6328, 8.6431, 9.1197, 8.4811, 8.6736, 8.2697, 8.7079, 8.6988, 8.3361, 8.403, 8.547, 8.7634, 8.1518, 8.8712, 8.4408, 9.2301, 9.075, 8.4153, 8.3367, 9.4279, 8.7813, 8.7593, 8.4088, 8.5126, 8.8435, 8.7765, 8.2658, 8.9985, 8.6678, 8.2223, 8.9108], [8.8181, 8.3452, 8.6692, 7.967, 8.6731, 8.0037, 8.599, 7.6448, 8.5186, 8.7967, 8.7127, 8.9641, 
+8.1619, 9.0955, 9.1087, 8.1168, 8.26, 8.3392, 8.5329, 8.6067, 7.6689, 8.7506, 8.4508, 8.1811, 8.8763, 8.4189, 8.9421, 8.7289, 8.4275, 8.9546, 8.8252, 8.362], [8.0075, 8.4183, 8.1164, 8.8231, 8.2925, 8.2691, 8.3428, 7.8886, 8.1571, 7.9669, 7.3715, 7.5726, 8.4605, 8.0435, 8.1571, 7.6786, 7.9925, 8.4765, 8.2343, 8.017, 8.74, 8.1788, 8.0766, 8.604, 7.5879, 8.3946, 7.8068, 7.9219, 7.9587, 8.2456, 8.2379, 8.3071], [8.6667, 8.7685, 8.4223, 8.4392, 8.0398, 7.7844, 8.3809, 8.185, 8.4749, 7.5288, 9.1172, 7.7242, 8.1851, 8.5223, 7.6847, 7.9777, 7.4604, 7.6684, 7.4895, 8.2097, 8.2767, 8.0612, 8.6188, 8.6629, 8.1708, 8.0955, 8.0767, 8.0137, 8.6342, 8.2574, 8.0566, 8.0936], [6.3567, 6.6081, 6.4847, 6.9751, 6.9063, 5.998, 6.4411, 6.7486, 6.3395, 6.7836, 6.6162, 6.707, 6.4759, 6.6053, 6.6828, 5.9799, 6.1754, 6.1394, 7.0913, 6.605, 6.6296, 6.5595, 6.3158, 6.236, 6.7976, 6.3671, 7.0551, 6.5678, 6.5312, 6.4217, 6.4729, 6.5111], [8.6585, 7.4303, 7.9264, 8.0858, 7.5189, 7.614, 7.6759, 6.9902, 8.0657, 7.8207, 7.8044, 7.866, 7.925, 8.6509, 7.9012, 8.1308, 7.6549, 7.9617, 7.7274, 7.7855, 7.5206, 7.5514, 7.9985, 8.1005, 8.0004, 7.6027, 7.9499, 6.9483, 8.1703, 7.8259, 7.9346, 8.2487], [7.5947, 7.1037, 7.4496, 7.1156, 7.3656, 7.7687, 7.0308, 7.0451, 7.145, 7.3657, 8.2256, 7.0575, 6.5442, 7.0316, 6.7054, 7.0651, 7.2678, 6.9254, 7.023, 6.6064, 7.3259, 6.9998, 7.6439, 7.6317, 6.958, 7.1334, 7.2824, 7.5297, 6.6769, 7.2389, 7.9182, 7.2334], [8.1392, 7.7207, 8.4728, 8.2338, 8.1971, 8.395, 8.4164, 7.4754, 8.3097, 7.9361, 8.197, 7.8906, 7.8375, 8.4759, 8.1392, 8.0432, 8.0416, 8.1714, 8.1376, 7.3135, 7.8383, 8.0617, 8.4068, 8.6233, 7.8184, 8.8262, 8.1805, 8.3196, 7.9614, 7.937, 8.6537, 8.0737], [7.9643, 8.1628, 7.0331, 7.4933, 7.5561, 8.1967, 8.4259, 7.5438, 7.693, 7.8663, 7.967, 7.4518, 7.8649, 7.3195, 6.6267, 7.0816, 7.6416, 7.8415, 6.7748, 6.9343, 7.5576, 6.3839, 7.7657, 7.9332, 6.5254, 7.8413, 7.5052, 8.071, 7.673, 7.4911, 7.6177, 7.9058], [8.6777, 8.1577, 8.834, 8.6758, 9.311, 8.6615, 8.636, 8.4471, 8.921, 8.5959, 8.4205, 9.2303, 9.2933, 8.5096, 8.3094, 9.065, 8.3762, 9.6608, 8.6221, 9.0081, 8.2147, 8.6581, 9.0546, 8.8253, 8.4823, 9.5331, 8.931, 8.5911, 8.4592, 8.5769, 9.1467, 8.4007], [8.5843, 9.3137, 8.8156, 9.176, 9.0724, 8.6688, 9.1193, 9.2035, 8.4697, 9.1205, 10.1251, 8.7688, 9.0983, 8.4036, 9.0354, 8.6663, 9.1437, 8.8556, 8.4589, 9.2611, 8.7974, 8.5158, 8.8969, 8.5329, 9.013, 8.8512, 8.743, 9.1088, 8.4229, 9.2166, 8.1661, 9.4409], [8.2701, 8.1035, 8.5566, 8.3069, 8.3005, 8.728, 8.2099, 8.2799, 8.5152, 8.7425, 8.3103, 8.4198, 8.3797, 8.6261, 8.8904, 8.033, 8.3162, 8.3467, 8.5721, 8.8942, 8.3574, 8.4386, 8.7638, 7.9229, 8.0907, 8.2036, 8.3604, 8.4443, 8.1791, 8.9834, 8.1123, 8.2907], [8.6434, 8.3645, 8.5026, 8.6593, 8.3645, 8.5988, 8.0434, 8.3933, 7.7855, 8.0509, 7.9619, 8.8101, 8.2018, 8.4717, 8.0374, 8.2931, 8.2656, 8.0605, 8.6685, 7.7731, 8.5855, 9.307, 8.0704, 8.3723, 7.8068, 8.3501, 7.7417, 8.5808, 8.1814, 7.6988, 7.8939, 7.7886], [8.4314, 7.9851, 7.7062, 7.8267, 8.1648, 7.2546, 8.3292, 8.2635, 7.2429, 8.5384, 7.5326, 8.0378, 8.5339, 7.5286, 7.4524, 7.7113, 7.7233, 8.0599, 7.9211, 7.9308, 7.9355, 8.0422, 7.8016, 8.2239, 8.1058, 7.7432, 8.7583, 7.6526, 8.3698, 7.8409, 8.2366, 8.2948], [8.0764, 7.2683, 8.5914, 7.7155, 7.2811, 7.0871, 8.4113, 8.1619, 7.5686, 7.8477, 8.0467, 7.6121, 7.4258, 7.5652, 7.8781, 7.5861, 7.1388, 7.8488, 6.9613, 7.3106, 8.0222, 7.6643, 7.6628, 7.6173, 7.9484, 7.5609, 6.8811, 7.6666, 6.4818, 6.8448, 8.1451, 7.9504], [7.8346, 7.8919, 8.2198, 7.5845, 7.5457, 7.636, 7.9102, 7.9551, 7.7195, 8.1326, 7.4945, 7.8331, 7.6127, 7.5002, 8.2996, 7.7461, 7.5002, 7.8748, 7.5018, 8.0739, 8.1647, 8.2277, 7.4817, 7.8082, 8.5208, 7.7841, 8.3137, 8.4073, 7.3671, 8.2949, 8.131, 8.1754], [7.6954, 7.5589, 7.7496, 7.4075, 7.7083, 6.8108, 8.1497, 7.3408, 
+7.7241, 7.6424, 7.568, 7.5706, 7.5537, 6.944, 7.3349, 7.9576, 7.1645, 7.1527, 8.2869, 7.962, 8.089, 7.5254, 7.626, 7.8021, 7.7306, 7.4979, 7.0059, 7.2665, 6.9893, 8.0901, 7.3836, 7.4616], [8.4148, 8.5968, 8.1851, 7.8631, 9.0323, 8.152, 8.2361, 8.1214, 8.2092, 8.4115, 8.6706, 8.028, 8.5063, 8.1626, 8.8303, 7.9633, 8.4372, 8.6552, 7.9169, 8.4394, 8.452, 8.1158, 8.3223, 8.751, 8.4859, 8.2511, 8.3241, 8.5565, 8.8478, 8.6793, 8.6562, 8.9514], [7.5133, 7.2168, 8.3165, 7.211, 8.0051, 8.287, 7.5261, 7.7859, 7.9263, 8.2767, 7.4825, 8.131, 8.2643, 8.0683, 8.0734, 8.4581, 8.0954, 8.0092, 7.8989, 8.2463, 7.9148, 8.2468, 8.0518, 8.414, 7.7378, 8.0425, 8.1389, 8.1614, 8.4141, 8.1545, 8.3341, 8.7053], [8.2111, 8.0814, 8.8183, 8.4504, 8.685, 8.5218, 9.0418, 9.0039, 8.1869, 8.6785, 8.4769, 8.1229, 8.8097, 8.532, 8.7378, 9.4513, 9.0483, 8.9696, 8.4392, 8.1675, 9.02, 8.4758, 8.5978, 8.4501, 8.6171, 9.426, 8.4715, 8.4829, 8.6528, 8.6815, 8.1606, 7.9589], [6.5957, 6.3939, 6.318, 6.3388, 6.5291, 6.6246, 6.0947, 6.473, 6.7892, 6.6208, 6.1878, 6.5385, 6.6564, 6.932, 6.0934, 6.9018, 6.5002, 6.7329, 6.9005, 6.3568, 6.379, 6.6211, 6.9144, 6.47, 6.1657, 6.4164, 6.7935, 7.0644, 6.4815, 6.5448, 6.5953, 6.6105], [8.7192, 8.9482, 8.9088, 8.8805, 8.5216, 8.6809, 8.6237, 9.239, 9.3793, 8.9918, 9.4284, 8.7705, 8.7722, 8.4212, 8.9535, 8.715, 8.9058, 9.0434, 8.7897, 8.4834, 8.8588, 8.8493, 8.8845, 9.1095, 8.8007, 8.7826, 9.4777, 9.2489, 8.8449, 8.5524, 8.7225, 9.01], [8.0632, 7.1438, 7.2827, 7.1069, 7.2589, 7.0988, 6.8615, 7.5868, 7.2774, 7.6787, 7.0596, 7.3256, 7.4626, 6.5853, 6.7788, 7.4962, 7.2715, 6.6016, 6.982, 6.8742, 7.0713, 7.7733, 7.0407, 7.9409, 7.1531, 6.9867, 7.7828, 7.5692, 7.719, 7.915, 7.6111, 7.6667], [6.9884, 7.4271, 7.3456, 7.5247, 7.1114, 7.6614, 7.9757, 7.4808, 7.5686, 7.4553, 7.6017, 7.3552, 7.1071, 7.3501, 7.3197, 6.7537, 7.3633, 7.2917, 7.3545, 7.0927, 7.4493, 7.4985, 7.0376, 7.3939, 7.552, 7.5391, 6.9625, 6.9263, 7.2883, 6.9163, 8.1429, 6.9957], [8.0341, 7.6466, 6.9965, 7.7558, 7.4633, 7.6221, 7.2431, 7.4873, 7.7416, 7.7699, 7.4098, 7.5456, 7.4973, 7.8391, 7.7379, 7.3566, 8.0096, 7.5454, 7.9204, 7.4687, 7.8874, 7.7427, 7.8026, 7.9572, 7.9345, 7.8398, 7.839, 7.3433, 7.7582, 7.0255, 7.008, 7.6745], [7.9327, 7.6463, 7.7996, 7.3102, 7.5705, 7.8201, 7.6012, 7.5417, 7.456, 7.1032, 7.1129, 6.9276, 7.5639, 7.3298, 7.1908, 7.5473, 7.2268, 7.7865, 8.0854, 7.5825, 7.1884, 6.9103, 8.1229, 7.5837, 7.0217, 7.7994, 6.8521, 7.2761, 7.3464, 7.3042, 7.0347, 8.2576], [8.4165, 8.2961, 7.7302, 8.0941, 8.3568, 8.607, 8.165, 8.4118, 8.1675, 8.4889, 7.4274, 8.4935, 8.0698, 8.0845, 7.2992, 7.9168, 8.4988, 9.0883, 8.0422, 8.0572, 8.4571, 8.3866, 8.0829, 8.2288, 8.1542, 8.5026, 8.5636, 8.8995, 8.6071, 8.5204, 8.3432, 8.6147], [8.1741, 7.5221, 7.9157, 7.1476, 7.7833, 7.5643, 7.3602, 7.1924, 7.1187, 8.0514, 7.8503, 7.4656, 7.4936, 7.1725, 6.786, 6.8016, 7.2138, 7.3718, 7.0172, 7.7036, 7.6056, 7.4818, 6.8121, 7.3507, 7.4152, 6.9855, 6.6629, 8.0944, 7.6424, 7.2913, 7.9836, 7.8138], [7.0092, 7.2027, 7.4416, 6.9547, 6.8497, 7.1338, 5.9451, 6.961, 6.788, 6.9242, 6.8658, 7.0483, 6.9669, 6.9539, 6.884, 7.0893, 6.7527, 7.2741, 6.3414, 7.0016, 7.0886, 6.4856, 6.7799, 7.3937, 6.8843, 6.6216, 5.8871, 7.0496, 6.9662, 7.144, 7.6477, 6.9291], [7.0192, 6.914, 7.1326, 7.144, 7.4184, 7.348, 6.8868, 6.9878, 7.6367, 6.8183, 7.4157, 7.7226, 7.3829, 7.2428, 7.6318, 7.2779, 7.151, 7.0831, 7.5561, 7.3975, 7.6948, 7.0366, 7.0447, 7.0016, 7.2522, 6.9118, 7.4782, 7.2727, 6.8106, 6.1165, 6.515, 7.6575], [9.3633, 9.1629, 9.4495, 8.6392, 8.6112, 8.7386, 9.3346, 9.5576, 9.4772, 9.2668, 8.8626, 9.5896, 9.2122, 9.3037, 9.2849, 9.1467, 9.0573, 9.1037, 8.8584, 9.3975, 9.2497, 9.6667, 8.6764, 9.7207, 9.2853, 9.2535, 9.0284, 9.0244, 8.7875, 9.625, 9.2355, 9.5615], [7.8679, 7.9594, 7.922, 8.4023, 8.0889, 
+8.102, 8.2953, 8.0166, 8.7586, 7.7185, 8.4823, 8.535, 7.6438, 8.3456, 8.142, 8.3486, 7.6234, 8.1293, 7.7011, 7.9281, 8.5412, 7.997, 7.256, 7.5546, 7.6452, 8.3998, 7.8, 7.4993, 8.4351, 8.1319, 8.1641, 7.7646], [6.7895, 6.1416, 6.4342, 6.5376, 6.7761, 7.1001, 6.578, 6.6222, 7.604, 6.8614, 6.6474, 6.844, 6.3942, 7.0197, 7.1714, 6.6286, 7.183, 6.7307, 6.9333, 6.5729, 6.5522, 6.3077, 6.9094, 6.733, 6.7437, 6.4374, 6.4237, 6.6112, 6.9968, 6.9379, 6.5936, 6.9353], [8.0454, 8.716, 8.1601, 8.4743, 7.8233, 8.4192, 7.5938, 8.0934, 7.8911, 7.3095, 7.5306, 8.4044, 8.1798, 8.4614, 8.0765, 6.992, 8.0954, 7.8085, 7.8314, 7.8502, 7.7393, 7.6715, 8.442, 8.1636, 7.7785, 7.8593, 8.3479, 8.1403, 8.0751, 7.5776, 7.8546, 7.6092]]};
+function toDS(d){return {genes:d.genes,samples:d.samples,X:d.X.map(r=>Float64Array.from(r)),dose:d.dose,cog:d.cog,notes:[]};}
+function loadDemo(){S.ds=toDS(DEMO);S.demo=true;S.target='cognition';recompute();}
+function clearData(){S.demo=false;S.ds=null;S.R=null;S.err='';render();}
+/* ---------- tooltip ---------- */
+const tip=document.getElementById('tip');
+function showTip(t,x,y){tip.textContent=t;tip.style.display='block';const w=tip.offsetWidth;tip.style.left=Math.max(6,Math.min(innerWidth-w-6,x-w/2))+'px';tip.style.top=Math.max(6,y-tip.offsetHeight-14)+'px';}
+document.addEventListener('pointerover',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t)showTip(t.dataset.tip,e.clientX,e.clientY);});
+document.addEventListener('pointerdown',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t)showTip(t.dataset.tip,e.clientX,e.clientY);else tip.style.display='none';});
+document.addEventListener('pointerout',e=>{if(e.pointerType==='mouse')tip.style.display='none';});
+/* ---------- chart helpers ---------- */
+const W=360;
+const lin=(d0,d1,r0,r1)=>v=>r0+(v-d0)/((d1-d0)||1)*(r1-r0);
+function niceTicks(a,b,n=5){const span=b-a||1,st=Math.pow(10,Math.floor(Math.log10(span/n))),m=span/n/st,s=(m<1.5?1:m<3?2:m<7?5:10)*st;const out=[];for(let v=Math.ceil(a/s)*s;v<=b+1e-9;v+=s)out.push(+v.toFixed(10));return out;}
+function axes(h,ml,mr,mt,mb,x0,x1,y0,y1,xl,yl,xt,yt){const X=lin(x0,x1,ml,W-mr),Y=lin(y0,y1,h-mb,mt);let s='';
+ for(const v of (yt||niceTicks(y0,y1,4)))s+=`<line x1="${ml}" x2="${W-mr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${ml-5}" y="${Y(v)+4}" text-anchor="end">${+v.toFixed(2)}</text>`;
+ for(const v of (xt||niceTicks(x0,x1,5)))s+=`<text x="${X(v)}" y="${h-mb+15}" text-anchor="middle">${+v.toFixed(2)}</text>`;
+ s+=`<text x="${(ml+W-mr)/2}" y="${h-2}" text-anchor="middle">${esc(xl)}</text><text transform="translate(11 ${(mt+h-mb)/2}) rotate(-90)" text-anchor="middle">${esc(yl)}</text>`;return {s,X,Y};}
+function scatter(pts,o){const h=o.h||230,ml=40,mr=10,mt=8,mb=34;const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+ const x0=o.x0??Math.min(...xs),x1=o.x1??Math.max(...xs),y0=o.y0??Math.min(...ys),y1=o.y1??Math.max(...ys);const px=(x1-x0)*.05,py=(y1-y0)*.05;
+ const a=axes(h,ml,mr,mt,mb,x0-px,x1+px,y0-py,y1+py,o.xl,o.yl);let s=a.s+(o.extra?o.extra(a):'');
+ for(const p of pts)s+=`<circle cx="${a.X(p.x)}" cy="${a.Y(p.y)}" r="${p.r||3.5}" fill="${p.c}" fill-opacity=".85" stroke="var(--surf)" stroke-width="1.5"/><circle cx="${a.X(p.x)}" cy="${a.Y(p.y)}" r="11" fill="transparent" data-tip="${esc(p.t)}"/>`;
+ return `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(o.label)}">${s}</svg>`;}
+/* ---------- views ---------- */
+const poolSummary=R=>{const g=R.groups;return g.map(x=>`${x.dose} Gy: ${f1(x.mean)}`).join(' · ');};
+function banner(){if(S.demo)return `<div class="banner demo"><b>Simulated example — not NASA data.</b> These numbers come from a computer-generated dataset made only to show the analysis steps working end to end. Do not read them as OSD-611 results. The OSD-611 tab shows the real study facts. Load the real OSD-611 tables in the <a href="#data">Data</a> tab to replace these numbers with real results.</div>`;return S.ds?`<div class="banner real"><b>Your data</b> · ${S.ds.samples.length} samples · ${S.ds.genes.length} genes. Every result below is computed from the files you loaded, in your browser.</div>`:'';}
+function needData(name){return `<div class="card"><h2 style="margin-top:0">${name}</h2><p>This step is computed from gene-expression data. Load the OSD-611 counts table and sample table in the <a href="#data">Data</a> tab and it runs here, in your browser.</p></div>`;}
+function vHome(){const R=S.R;let res='';
+ if(R){const e=R.echo,sig=R.de.fdr.filter(v=>v<.1).length;res=banner()+`<div class="card"><h3 style="margin-top:0">Results on your data</h3><div class="grid">
+ <div class="stat"><div class="k">NeuroEcho R²</div><div class="v">${fx(e.r2)}</div><div class="n">cross-validated</div></div>
+ <div class="stat"><div class="k">Permutation p</div><div class="v">${fx(e.pPerm,3)}</div><div class="n">300 label shuffles</div></div>
+ <div class="stat"><div class="k">Genes at FDR&lt;0.1</div><div class="v">${sig}</div><div class="n">of ${R.ds.genes.length}</div></div>
+ <div class="stat"><div class="k">Samples</div><div class="v">${R.ds.samples.length}</div><div class="n">${new Set(R.ds.dose).size} dose groups</div></div></div><p class="note">Index by dose group: ${poolSummary(R)}</p></div>`;}
+ return `<div class="card"><h2 style="margin-top:0">Can brain gene expression flag space-radiation stress early?</h2>
+ <p>AstroHelix takes NASA's <b>OSD-611</b> study — mouse hippocampus after 28Si heavy-ion irradiation (0.3, 0.6, 0.9 Gy) — and turns it into a decision-support chain for crewed missions.</p>
+ <ol style="padding-left:20px;color:var(--ink2);margin:6px 0">
+ <li><b>OSD-611</b> – the real study: design, assays, samples, findings.</li>
+ <li><b>NeuroEcho</b> – ridge regression, cross-validation and a permutation test on the expression table.</li>
+ <li><b>Risk index (NVI)</b> – control = 0, most-affected dose group = 100.</li>
+ <li><b>Resilience gap</b> – perturbed pathways next to what the tardigrade literature says.</li>
+ <li><b>Mission</b> – cumulative dose from NASA's measured cruise rate, against NASA's career limit.</li>
+ <li><b>Evidence</b> – every statement tagged by how well it is supported.</li></ol></div>${res}
+ ${R?'':`<div class="card"><h3 style="margin-top:0">Status</h3><p>Steps 1, 5 and 6 are available now. Steps 2–4 run as soon as the OSD-611 counts and sample tables are loaded in the <a href="#data">Data</a> tab.</p></div>`}`;}
+const SAMPLE_NAMES='Mouse hippocampus 1–12 and 17';
+function vStudy(){const rows=[['Study','OSD-611 (GeneLab ID GLDS-592), version 2'],['Title','Postsynaptic density radiation signature following space irradiation'],['Organism','Mus musculus, strain C57BL/6J (source: Jackson)'],['Tissue','Hippocampus'],['Samples','13 ('+SAMPLE_NAMES+')'],['Assays','RNA-seq (Illumina); DNA methylation profiling by DIP-seq (Illumina), two assays'],['Factors','Ionizing radiation; absorbed radiation dose'],['Project type','Ground study'],['Funding','NASA grants NNJ12ZSA001N, 80NSSC19K0498'],['Submitted / released','04 May 2023 / 16 Jan 2025'],['Processed data release','27 Feb 2026'],['DOI (dataset)','10.26030/t0z5-5g08'],['Paper','Impey et al. 2023, Frontiers in Physiology — PubMed 37440997, DOI 10.3389/fphys.2023.1215535']];
+ const D=[[0.3,'Impaired','var(--crit)'],[0.6,'Not impaired','var(--ok)'],[0.9,'Not impaired','var(--ok)']];
+ return `<h2>OSD-611: the real study</h2><div class="card"><div class="tablewrap"><table>${rows.map(r=>`<tr><th style="white-space:normal;width:34%">${r[0]}</th><td class="w" style="white-space:normal">${esc(r[1])}</td></tr>`).join('')}</table></div><p class="note">Source: the NASA OSDR study page for OSD-611.</p></div>
+ <div class="card"><h3 style="margin-top:0">What the study found</h3><p>Mice were irradiated with <b>28Si ions (600 MeV/n)</b>, a heavy ion present in space radiation. The authors assessed cognitive performance and hippocampal gene expression and DNA hydroxymethylation (5hmC):</p>
+ <div class="grid" style="margin:8px 0">${D.map(d=>`<div class="stat"><div class="k">${d[0]} Gy</div><div class="v" style="font-size:16px;color:${d[2]}">${d[1]}</div><div class="n">cognition</div></div>`).join('')}</div>
+ <ul><li>Cognition was impaired at <b>0.3 Gy</b> but not at 0.6 or 0.9 Gy.</li><li>The impairment correlated with altered gene expression and 5hmC profiles mapping to specific gene ontology pathways.</li><li>Comparing proton, 56Fe and 28Si irradiation revealed a general <b>space-radiation synaptic signature of 45 genes</b>, associated with glutamatergic synapse and postsynaptic density.</li></ul>
+ <p class="note">This non-monotonic dose pattern is why AstroHelix reads the index group by group instead of assuming risk rises with dose.</p></div>
+ <div class="card"><h3 style="margin-top:0">Files used by AstroHelix</h3><ul><li><b>GeneLab Processed RNA-Seq Files</b> – counts table (genes × samples).</li><li><b>Study Metadata Files</b> / runsheet – sample-to-dose table.</li></ul><p class="note">Not used: raw sequencing files (the 66.59 GB), and fruit-fly spaceflight studies OSD-514, OSD-588 and OSD-596 (microgravity and infection, not radiation).</p></div>`;}
+function vData(){const d=S.ds||{genes:[],samples:[],dose:[],cog:null,notes:[]},cnt={};d.dose.forEach(x=>cnt[x]=(cnt[x]||0)+1);
+ const opts=[['cognition','Cognition score (inverted)',!!d.cog],['binary','Irradiated vs control',true],['dose','Dose (continuous)',true]].filter(o=>o[2]);
+ return banner()+(S.ds?`<div class="card"><h2 style="margin-top:0">Dataset</h2>
+ <div class="tablewrap"><table><tr><th>Dose (Gy)</th><th>Samples</th></tr>${Object.keys(cnt).sort((a,b)=>a-b).map(k=>`<tr><td>${k}</td><td>${cnt[k]}</td></tr>`).join('')}</table></div>
+ <p class="note">${d.genes.length} genes × ${d.samples.length} samples. Cognition column: ${d.cog?'present':'absent'}.</p>
+ ${(d.notes||[]).map(n=>`<div class="warnbox">${esc(n)}</div>`).join('')}
+ <label>What should NeuroEcho predict?<br><select id="tsel">${opts.map(o=>`<option value="${o[0]}" ${o[0]===S.target?'selected':''}>${o[1]}</option>`).join('')}</select></label>
+ <p class="note">“Cognition” makes the index track the behavioural outcome, so a non-monotonic dose effect (like the published 0.3 Gy-only impairment) can appear. “Binary” and “dose” track general radiation exposure.</p></div>`:'')+`
+ <div class="card"><h2 style="margin-top:0">Load your own data</h2>
+ <p>Use processed expression from NASA OSDR (e.g. study <b>OSD-611</b>) or your own. Two CSV/TSV files:</p>
+ <ul><li><b>Expression:</b> first column = gene symbol, then one column per sample (normalised or raw counts; counts are log-transformed automatically).</li><li><b>Metadata:</b> first column = sample name (same as expression headers), a column containing <code>dose</code> (Gy, 0 = control), optional cognition column (name containing “cogn”, “recogn” or “discrim”).</li></ul>
+ <label>Expression file<br><input type="file" id="fe" accept=".csv,.tsv,.txt"></label>
+ <label>Metadata file<br><input type="file" id="fm" accept=".csv,.tsv,.txt"></label>
+ <div class="row"><button class="pri" id="go">Run on my data</button><button id="ex">Reload simulated example</button>${S.ds?'<button id="demo">Clear data</button>':''}</div>
+ ${S.err?`<div class="errbox">${esc(S.err)}</div>`:''}
+ <p class="note">Files stay in your browser; nothing is uploaded. Pathway tables use mouse gene symbols (e.g. Bdnf, Tp53).</p></div>
+ <div class="card"><h3 style="margin-top:0">Using NASA OSD-611 (GLDS-592)</h3><p class="note">Mouse hippocampus, 28Si ions, RNA-seq, 13 samples (Impey et al. 2023). On the OSDR page open <b>Files</b>: take the normalised-counts table from <i>GeneLab Processed RNA-Seq Files</i> and the sample/runsheet table from <i>Study Metadata Files</i> (the “s_…txt” file inside the ISA zip, or the runsheet CSV). The loader reads Ensembl or symbol gene columns, text doses such as “0.3 Gy” or “Sham”, and matches sample names loosely. With only 13 samples, cross-validated metrics are noisy — the app warns you.</p></div>`;}
+function vEcho(){if(!S.R)return needData('NeuroEcho');const R=S.R,e=R.echo,y=R.y;
+ const pts=Array.from(y,(v,i)=>({x:v,y:e.pred[i],c:R.ds.dose[i]>0?'var(--c2)':'var(--c1)',t:`${R.ds.samples[i]} · ${R.ds.dose[i]} Gy · actual ${fx(v)} · predicted ${fx(e.pred[i])}`}));
+ const lo=Math.min(...pts.map(p=>Math.min(p.x,p.y))),hi=Math.max(...pts.map(p=>Math.max(p.x,p.y)));
+ const sc=scatter(pts,{xl:'actual (z-score)',yl:'out-of-fold prediction',label:'Actual vs cross-validated prediction',x0:lo,x1:hi,y0:lo,y1:hi,extra:a=>`<line x1="${a.X(lo)}" y1="${a.Y(lo)}" x2="${a.X(hi)}" y2="${a.Y(hi)}" stroke="var(--mut)" stroke-dasharray="4 3"/>`});
+ const P=R.perm,mx=Math.max(...P.counts),hh=150,ml=40,mt=8,mb=34,Xp=lin(P.edges[0],Math.max(P.edges[P.edges.length-1],e.r2)+.02,ml,W-10),Yp=lin(0,mx,hh-mb,mt);
+ let hs=`<line x1="${ml}" x2="${W-10}" y1="${hh-mb}" y2="${hh-mb}" stroke="var(--grid)"/>`;
+ P.counts.forEach((c,i)=>{hs+=`<rect x="${Xp(P.edges[i])+1}" y="${Yp(c)}" width="${Math.max(1,Xp(P.edges[i+1])-Xp(P.edges[i])-2)}" height="${hh-mb-Yp(c)}" rx="2" fill="var(--mut)" fill-opacity=".45" data-tip="${c} shuffles with R² ${fx(P.edges[i])} to ${fx(P.edges[i+1])}"/>`;});
+ hs+=`<line x1="${Xp(e.r2)}" x2="${Xp(e.r2)}" y1="${mt}" y2="${hh-mb}" stroke="var(--c2)" stroke-width="2"/><text x="${Xp(e.r2)-4}" y="${mt+10}" text-anchor="end" class="lab">observed ${fx(e.r2)}</text>`;
+ for(const v of niceTicks(P.edges[0],e.r2,4))hs+=`<text x="${Xp(v)}" y="${hh-mb+15}" text-anchor="middle">${v}</text>`;
+ hs+=`<text x="${(ml+W)/2}" y="${hh-2}" text-anchor="middle">cross-validated R² with shuffled labels</text>`;
+ const vp=R.volcano.map(v=>({x:v.lfc,y:v.nlp,c:v.sig?'var(--c2)':'var(--mut)',r:v.sig?3.6:2.6,t:`${v.gene} · log2FC ${fx(v.lfc)} · −log10 p ${fx(v.nlp)}${v.sig?' · FDR<0.1':''}`}));
+ const vol=scatter(vp,{xl:'log2 fold change (irradiated − control)',yl:'−log10 p',label:'Volcano plot',h:240});
+ const maxc=Math.max(...R.signals.map(s=>Math.abs(s.coef)));
+ return banner()+`<h2>NeuroEcho — early-signal detector</h2><div class="card"><div class="grid">
+ <div class="stat"><div class="k">R² (CV)</div><div class="v">${fx(e.r2)}</div></div><div class="stat"><div class="k">RMSE (z)</div><div class="v">${fx(e.rmse)}</div></div>
+ <div class="stat"><div class="k">Rank corr.</div><div class="v">${fx(e.rho)}</div></div><div class="stat"><div class="k">Perm. p</div><div class="v">${fx(e.pPerm,3)}</div></div></div>
+ <p class="note">Target: ${esc(R.label)}. Ridge regression on standardised genes, penalty chosen by leave-one-out inside each fold, 5-fold cross-validation. Every prediction is for a sample the model did not train on.</p>
+ ${R.ds.samples.length<20?'<div class="warnbox">Fewer than 20 samples: treat metrics as unstable.</div>':''}</div>
+ <div class="card"><h3 style="margin-top:0">Actual vs predicted</h3>${sc}<div class="legend"><span><i style="background:var(--c1)"></i>control</span><span><i style="background:var(--c2)"></i>irradiated</span></div></div>
+ <div class="card"><h3 style="margin-top:0">Is it better than chance?</h3>${`<svg viewBox="0 0 ${W} ${hh}">${hs}</svg>`}<p class="note">If the model only found noise, R² would sit in the grey bars. The orange line is the real result; p = (1 + shuffles ≥ observed) / (shuffles + 1).</p></div>
+ <div class="card"><h3 style="margin-top:0">Top signals</h3><div class="tablewrap"><table><tr><th>Gene</th><th>Pathway</th><th>Wt</th></tr>${R.signals.map(s=>`<tr><td>${esc(s.gene)}</td><td>${esc(s.pw)}</td><td><span style="display:inline-block;height:8px;border-radius:4px;width:${Math.round(34*Math.abs(s.coef)/maxc)}px;background:${s.coef>0?'var(--c2)':'var(--c1)'};vertical-align:middle"></span> ${s.coef>0?'+':'−'}</td></tr>`).join('')}</table></div><p class="note">Orange = higher expression raises the score; blue = lowers it. These are associations, not causes.</p></div>
+ <div class="card"><h3 style="margin-top:0">Differential expression</h3>${vol}<p class="note">Welch t-test irradiated (any dose) vs control, Benjamini–Hochberg FDR. Orange = FDR &lt; 0.1.</p></div>`;}
+function vIndex(){if(!S.R)return needData('Neural Vulnerability Index');const R=S.R,G=R.groups,h=230,ml=40,mr=10,mt=10,mb=36;
+ const top=Math.max(110,...G.map(g=>g.mean+g.sd)),bot=Math.min(-10,...G.map(g=>g.mean-g.sd));
+ const a=axes(h,ml,mr,mt,mb,0,1,bot,top,'dose group','Neural Vulnerability Index',[],niceTicks(bot,top,4)),bw=Math.min(60,(W-ml-mr)/G.length-14);let s=a.s;
+ G.forEach((g,i)=>{const cx=ml+(i+.5)*(W-ml-mr)/G.length,l=levelOf(g.mean);const col=['var(--ok)','var(--warn)','var(--ser)','var(--crit)'][LEVELS.indexOf(l)];
+  const y0=a.Y(0),y1=a.Y(g.mean);s+=`<rect x="${cx-bw/2}" y="${Math.min(y0,y1)}" width="${bw}" height="${Math.max(2,Math.abs(y1-y0))}" rx="4" fill="${col}" fill-opacity=".85" data-tip="${g.dose} Gy · n=${g.n} · mean ${f1(g.mean)} ± ${f1(g.sd)} (SD) · ${l.n}"/>
+  <line x1="${cx}" x2="${cx}" y1="${a.Y(g.mean-g.sd)}" y2="${a.Y(g.mean+g.sd)}" stroke="var(--ink2)" stroke-width="1.5"/><text x="${cx}" y="${h-mb+15}" text-anchor="middle" class="lab">${g.dose} Gy</text>`;});
+ s+=`<line x1="${ml}" x2="${W-mr}" y1="${a.Y(0)}" y2="${a.Y(0)}" stroke="var(--mut)"/>`;
+ const ratio=G.length>2?'':'';const nm=G.filter(g=>g.dose>0);const peak=nm.reduce((m,g)=>g.mean>m.mean?g:m,nm[0]);const mono=nm.every((g,i)=>i===0||g.mean>=nm[i-1].mean-5);
+ return banner()+`<h2>Neural Vulnerability Index</h2><div class="card"><p>NVI rescales the NeuroEcho score so the <b>control mean = 0</b> and the <b>highest dose-group mean = 100</b> (here: ${peak.dose} Gy). It is a relative scale within this dataset, not an absolute risk.</p>
+ <svg viewBox="0 0 ${W} ${h}" role="img" aria-label="NVI by dose group">${s}</svg>
+ <div class="legend">${LEVELS.map(l=>`<span><span class="badge ${l.c}">${l.i} ${l.n}</span> ≥ ${l.t}</span>`).join('')}</div>
+ <p class="note">Bars: group mean; whisker: ± 1 SD across samples. Out-of-fold predictions are used, so no sample scores itself.</p></div>
+ <div class="card"><h3 style="margin-top:0">Reading the shape</h3><p>${mono?'The index rises with dose in this dataset.':'<b>The index does not rise steadily with dose.</b> The group means peak at '+peak.dose+' Gy and fall at higher doses. That matches the published pattern that cognitive impairment appeared at 0.3 Gy but not at 0.6 or 0.9 Gy (Impey et al. 2023), and it is why dose is <i>interpolated</i> between measured groups in the Mission tab rather than fitted with a smooth rising curve.'}</p>
+ ${R.degenerate?'<div class="errbox">Group means barely differ from control, so the 0–100 scaling is not meaningful for this data.</div>':''}</div>`;}
+const TARDI={"Chromatin protection":["Dsup (damage suppressor protein) binds nucleosomes and shields DNA from hydroxyl radicals (Chavez et al. 2019, eLife).","Published"],"Oxidative stress defense":["Dsup reduces hydroxyl-radical damage to DNA; tardigrades also carry stress-response genes (literature).","Published (mechanism); relevance to neurons is a hypothesis"],"DNA damage response":["Tardigrade DNA damage handling after irradiation is studied; a direct brain analogue is not established.","Hypothesis"],"DNA repair":["Repair gene upregulation after irradiation is reported in tardigrades; transfer to mammalian neurons is untested.","Hypothesis"]};
+function vGap(){if(!S.R)return needData('Resilience gap');const R=S.R,rows=R.pwRows.slice().sort((a,b)=>b.m-a.m);
+ return banner()+`<h2>Resilience gap</h2><div class="card"><p>Left: how strongly each pathway shifts in <b>your human/mouse data</b> (mean |log2 fold change| of its genes, computed). Right: what the literature says about tardigrade protection for the same biology. <b>No tardigrade numbers are invented here</b> – the pairing is qualitative.</p>
+ <div class="tablewrap"><table><tr><th>Pathway</th><th>Genes</th><th>Perturbation</th></tr>${rows.map(r=>`<tr><td>${esc(r.pw)}</td><td>${r.n}</td><td><span style="display:inline-block;height:8px;border-radius:4px;width:${Math.round(55*r.hp)}px;background:var(--c1);vertical-align:middle" data-tip="${esc(r.pw)} · mean |log2FC| ${fx(r.m,3)}"></span> ${fx(r.m,2)}</td></tr>`).join('')||'<tr><td colspan=3>No pathway genes matched (expects mouse symbols).</td></tr>'}</table></div>
+ ${R.mapped<10?'<div class="warnbox">Only '+R.mapped+' of the pathway genes were found in your file; pathway results are weak.</div>':''}</div>
+ <div class="card"><h3 style="margin-top:0">Tardigrade link (from literature)</h3>${rows.map(r=>TARDI[r.pw]?`<p><b>${esc(r.pw)}</b> — ${TARDI[r.pw][0]} <span class="badge ${TARDI[r.pw][1]==='Published'?'t-nasa':'t-hyp'}">${esc(TARDI[r.pw][1])}</span></p>`:`<p><b>${esc(r.pw)}</b> — <span class="note">no established tardigrade counterpart; not assessed.</span></p>`).join('')}
+ <p class="note">Reference point for Dsup-like protection: about 40% greater X-ray tolerance in human HEK293 cells expressing Dsup (Hashimoto et al. 2016). That is a cell-culture result for X-rays, not a measured brain or space-radiation effect.</p></div>`;}
+function simRun(over){const p=Object.assign({},S.sim,over||{});return simulate(S.R.groups,{rate:p.rate,shield:p.shield,gyPerSv:1/p.q,sens:p.sens,lag:p.lag,protect:p.protect});}
+function lineChart(id,series,o){const h=250,ml=40,mr=70,mt=10,mb=34;const days=series[0].d.days;const a=axes(h,ml,mr,mt,mb,0,180,0,100,'mission day','NVI',[0,30,60,90,120,150,180],[0,25,50,75,100]);let s=a.s;
+ for(const l of LEVELS.slice(1))s+=`<line x1="${ml}" x2="${W-mr}" y1="${a.Y(l.t)}" y2="${a.Y(l.t)}" stroke="var(--mut)" stroke-opacity=".35" stroke-dasharray="2 4"/>`;
+ for(const se of series){const pts=se.d[se.k];s+=`<path d="${pts.map((v,i)=>(i?'L':'M')+a.X(i).toFixed(1)+' '+a.Y(v).toFixed(1)).join('')}" fill="none" stroke="${se.c}" stroke-width="2.2" stroke-linejoin="round" ${se.dash?'stroke-dasharray="6 4"':''}/>`;
+  if(!se.dash)s+=`<text x="${W-mr+5}" y="${a.Y(pts[180])+4}" class="lab" style="fill:${se.c}">${esc(se.n)}</text>`;}
+ if(o.band){const d=o.band;s+=`<path d="${d.hi.map((v,i)=>(i?'L':'M')+a.X(i).toFixed(1)+' '+a.Y(v).toFixed(1)).join('')}${d.lo.map((v,i)=>'L'+a.X(180-i).toFixed(1)+' '+a.Y(d.lo[180-i]).toFixed(1)).join('')}Z" fill="${series[0].c}" fill-opacity=".12"/>`;}
+ s+=`<line id="${id}x" y1="${mt}" y2="${h-mb}" stroke="var(--ink2)" stroke-opacity=".6" style="display:none"/><rect id="${id}r" x="${ml}" y="${mt}" width="${W-ml-mr}" height="${h-mb-mt}" fill="transparent"/>`;
+ setTimeout(()=>{const r=document.getElementById(id+'r');if(!r)return;const x=document.getElementById(id+'x');const mv=e=>{const bb=r.getBoundingClientRect();const f=(e.clientX-bb.left)/bb.width;const i=Math.max(0,Math.min(180,Math.round(f*180)));const px=ml+f*(W-ml-mr);x.setAttribute('x1',a.X(i));x.setAttribute('x2',a.X(i));x.style.display='';
+   showTip(`Day ${i} · `+series.map(se=>`${se.n} ${f1(se.d[se.k][i])}`).join(' · ')+` · ${series[0].d.dose[i].toFixed(3)} Gy`,e.clientX,e.clientY);};r.addEventListener('pointermove',mv);r.addEventListener('pointerdown',mv);r.addEventListener('pointerleave',()=>{x.style.display='none';tip.style.display='none';});},0);
+ return `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="Simulated NVI over 180 days">${s}</svg>`;}
+function slider(k,lab,min,max,step,fmt,note){const v=S.sim[k];return `<label>${lab} <span class="val" id="v_${k}">${fmt(v)}</span><input type="range" data-k="${k}" min="${min}" max="${max}" step="${step}" value="${v}">${note?`<small>${note}</small>`:''}</label>`;}
+function vMission(){if(!S.R)return vMissionDose();const R=S.R,p=S.sim,A=simRun({shield:p.shield,protect:0}),B=simRun({shield:p.shieldB,protect:0}),C=simRun({shield:p.shieldB,protect:p.protect});
+ const lowest=R.groups.find(g=>g.dose>0).dose,cum=A.dose[180],below=cum<lowest;
+ const sv=p.rate*180*(1-p.shield)/1000,pct=sv/0.6*100;
+ const cps=[1,30,100,180].map(t=>`<tr><td>Day ${t}</td><td>${A.dose[t].toFixed(3)}</td><td>${f1(A.mol[t])}</td><td>${f1(A.neu[t])}</td><td>${badge(A.neu[t])}</td></tr>`).join('');
+ const lv=levelOf(A.neu[180]);const top=R.pwAgg.map(x=>x.pw);
+ const rec=[
+  ['Environmental',[ 'Shielding choices act on the dose term directly: scenario B applies '+Math.round(p.shieldB*100)+'% reduction in the model.', 'Schedule dose-heavy activities (e.g. extravehicular work) with the cumulative-dose curve in view.' ]],
+  ['Biological (research directions)',[ top.includes('Oxidative stress defense')||top.includes('DNA damage response')?'Radical-scavenging and DNA-damage-response pathways rank among the strongest signals here; they are candidate targets for the study of countermeasures.':'Pathways ranking highest in the NeuroEcho weights are the first candidates to study.', 'Dsup-like chromatin protection is a hypothesis for neurons (scenario C); it needs cell and animal experiments, not conclusions from this app.' ]],
+  ['Personalised (what would be needed)',[ 'Individual sensitivity is a slider assumption here ('+p.sens.toFixed(1)+'×). Real personalisation needs individual biomarkers and validated models, which this prototype does not have.' ]]];
+ return banner()+`<h2>Mission simulation</h2><div class="card"><div class="warnbox"><b>Assumptions you can change.</b> Dose-equivalent rate and quality factor are inputs, not findings. The 1.8 mSv/day starting point is the MSL RAD cruise dose-equivalent measured on the way to Mars; the conversion to absorbed dose (÷ quality factor) is an assumption.</div>
+ ${slider('rate','Dose-equivalent rate',0.3,3,0.1,v=>v.toFixed(1)+' mSv/day','1.8 = MSL RAD cruise measurement')}
+ ${slider('q','Quality factor (Sv per Gy)',1,6,0.1,v=>v.toFixed(1),'assumption: converts Sv to absorbed Gy')}
+ ${slider('shield','Shielding in scenario A',0,0.6,0.05,v=>Math.round(v*100)+'%','baseline = 0%')}
+ ${slider('sens','Individual sensitivity',0.5,2,0.1,v=>v.toFixed(1)+'×','assumption')}
+ ${slider('lag','Neural response lag',0,60,1,v=>v+' days','assumption: delay of neural vs molecular change')}</div>
+ ${below?`<div class="warnbox"><b>Extrapolation warning.</b> Cumulative dose at day 180 is ${cum.toFixed(3)} Gy, below the lowest measured group (${lowest} Gy). The index here is a straight-line interpolation between control and ${lowest} Gy — an assumption the data cannot confirm.</div>`:''}
+ <div class="card"><h3 style="margin-top:0">NVI over 180 days (scenario A)</h3>${lineChart('l1',[{d:A,k:'neu',c:'var(--c1)',n:'Neural'},{d:A,k:'mol',c:'var(--c3)',n:'Molecular',dash:true}],{band:A})}
+ <div class="legend"><span><i style="background:var(--c1)"></i>Neural (with lag, shaded ±1.96 SD)</span><span><i style="background:var(--c3)"></i>Molecular</span></div>
+ <div class="tablewrap" style="margin-top:8px"><table><tr><th>Checkpoint</th><th>Gy</th><th>Mol.</th><th>Neural</th><th>Level</th></tr>${cps}</table></div>
+ <p class="note">Cumulative dose equivalent over 180 days: ${(sv*1000).toFixed(0)} mSv = ${pct.toFixed(0)}% of NASA's 600 mSv career limit (a limit set for all astronauts). Day-180 level: ${badge(A.neu[180])}.</p></div>
+ <div class="card"><h3 style="margin-top:0">What-if universe</h3>${lineChart('l2',[{d:A,k:'neu',c:'var(--c1)',n:'A'},{d:B,k:'neu',c:'var(--c2)',n:'B'},{d:C,k:'neu',c:'var(--c3)',n:'C'}],{})}
+ <div class="legend"><span><i style="background:var(--c1)"></i>A baseline</span><span><i style="background:var(--c2)"></i>B shielding ${Math.round(p.shieldB*100)}%</span><span><i style="background:var(--c3)"></i>C shielding + hypothetical protection</span></div>
+ ${slider('shieldB','Scenario B/C shielding',0,0.6,0.05,v=>Math.round(v*100)+'%')}
+ ${slider('protect','Scenario C protection',0,0.6,0.05,v=>Math.round(v*100)+'%','0.4 mirrors the ~40% X-ray tolerance of Dsup in HEK293 cells — a hypothesis, not a result for brains')}
+ <div class="tablewrap" style="margin-top:8px"><table><tr><th>Day 180</th><th>NVI</th><th>Level</th></tr><tr><td>A baseline</td><td>${f1(A.neu[180])}</td><td>${badge(A.neu[180])}</td></tr><tr><td>B shielding</td><td>${f1(B.neu[180])}</td><td>${badge(B.neu[180])}</td></tr><tr><td>C + protection</td><td>${f1(C.neu[180])}</td><td>${badge(C.neu[180])}</td></tr></table></div></div>
+ <div class="card"><h3 style="margin-top:0">Countermeasure hypotheses ${badge(A.neu[180])}</h3>${rec.map(r=>`<h3>${r[0]}</h3><ul>${r[1].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`).join('')}<p class="note">Rule-based ideas for research design. Not medical advice or a prescription.</p></div>`;}
+function vMissionDose(){const p=S.sim,d=180;const cum=t=>p.rate*t*(1-p.shield);const tot=cum(d),pct=tot/600*100,gy=tot/1000/p.q;
+ const h=230,ml=44,mr=12,mt=10,mb=34,ymax=Math.max(650,cum(180)*1.1);const a=axes(h,ml,mr,mt,mb,0,180,0,ymax,'mission day','cumulative dose equivalent (mSv)',[0,30,60,90,120,150,180]);
+ let s=a.s+`<line x1="${ml}" x2="${W-mr}" y1="${a.Y(600)}" y2="${a.Y(600)}" stroke="var(--crit)" stroke-dasharray="5 4"/><text x="${W-mr}" y="${a.Y(600)-5}" text-anchor="end" style="fill:var(--crit)">NASA career limit 600 mSv</text>`;
+ let path='';for(let i=0;i<=180;i+=3)path+=(i?'L':'M')+a.X(i).toFixed(1)+' '+a.Y(cum(i)).toFixed(1);
+ s+=`<path d="${path}" fill="none" stroke="var(--c1)" stroke-width="2.4"/><rect id="mdr" x="${ml}" y="${mt}" width="${W-ml-mr}" height="${h-mb-mt}" fill="transparent"/>`;
+ setTimeout(()=>{const r=document.getElementById('mdr');if(!r)return;const mv=e=>{const bb=r.getBoundingClientRect();const i=Math.max(0,Math.min(180,Math.round((e.clientX-bb.left)/bb.width*180)));showTip(`Day ${i} · ${cum(i).toFixed(0)} mSv · ${(cum(i)/6).toFixed(0)}% of 600 mSv`,e.clientX,e.clientY);};r.addEventListener('pointermove',mv);r.addEventListener('pointerdown',mv);r.addEventListener('pointerleave',()=>tip.style.display='none');},0);
+ return `<h2>Mission dose</h2><div class="card"><p>Cumulative dose equivalent on a Mars-cruise leg, from NASA's measured rate. This part needs no dataset.</p>
+ ${slider('rate','Dose-equivalent rate',0.3,3,0.1,v=>v.toFixed(1)+' mSv/day','1.8 = MSL RAD cruise measurement to Mars')}
+ ${slider('shield','Shielding',0,0.6,0.05,v=>Math.round(v*100)+'%','reduces the dose in this calculator')}
+ ${slider('q','Quality factor (Sv per Gy)',1,6,0.1,v=>v.toFixed(1),'assumption used only to estimate absorbed dose')}
+ <svg viewBox="0 0 ${W} ${h}" role="img" aria-label="Cumulative dose over 180 days">${s}</svg>
+ <div class="grid" style="margin-top:8px"><div class="stat"><div class="k">180-day dose equivalent</div><div class="v">${tot.toFixed(0)} mSv</div><div class="n">${pct.toFixed(0)}% of 600 mSv limit</div></div>
+ <div class="stat"><div class="k">≈ absorbed dose</div><div class="v">${gy.toFixed(3)} Gy</div><div class="n">vs lowest OSD-611 dose 0.3 Gy</div></div></div>
+ <div class="warnbox">The mission-equivalent dose is well below the lowest dose measured in OSD-611 (0.3 Gy), so mapping brain effects to it is an extrapolation that the study cannot confirm.</div>
+ <p class="note">Round trip ≈ 0.66 Sv (MSL RAD). NASA's 600 mSv career limit applies to all astronauts.</p></div>
+ <div class="card"><h3 style="margin-top:0">Dose → brain index</h3><p class="note">Load the OSD-611 counts and sample tables in the <a href="#data">Data</a> tab to add the neural vulnerability index, three what-if scenarios and countermeasure hypotheses.</p></div>`;}
+function vEvidence(){const R=S.R,e=R?R.echo:null,sig=R?R.de.fdr.filter(v=>v<.1).length:0;
+ const items=[
+  ['nasa','28Si ions, mice, 0 / 0.3 / 0.6 / 0.9 Gy; only 0.3 Gy impaired novel-object recognition; gene-expression and 5hmC changes in synaptic pathways (Impey et al. 2023, Frontiers in Physiology).'],
+  ['nasa','NASA GeneLab links OSD-611 to a “radiation synaptic signature”.'],
+  ['nasa','Mars-cruise GCR dose equivalent about 1.8 mSv/day (MSL RAD).'],
+  ['nasa','NASA career dose limit 600 mSv.'],
+  ['nasa','Dsup binds nucleosomes and shields DNA from hydroxyl radicals (Chavez et al. 2019); ~40% X-ray tolerance in HEK293 (Hashimoto et al. 2016).'],
+  ...(R?[['model',`NeuroEcho cross-validated R² = ${fx(e.r2)}, permutation p = ${fx(e.pPerm,3)}.`],['model',`${sig} of ${R.ds.genes.length} genes differ at FDR < 0.1.`],['model',`NVI group means: ${poolSummary(R)}.`],['model','Dose–index mapping is a linear interpolation between measured groups.']]:[]),
+  ['hyp','Dsup-like protection reduces neural vulnerability (scenario C).'],
+  ['hyp','Index behaviour below the lowest measured dose (extrapolation).'],
+  ['hyp','Tardigrade pathways transfer to mammalian neurons.']];
+ const n={nasa:0,model:0,hyp:0};items.forEach(i=>n[i[0]]++);const tot=items.length;const nm={nasa:'NASA / published',model:'Model prediction',hyp:'Research hypothesis'};const col={nasa:'var(--ok)',model:'var(--acc)',hyp:'var(--warn)'};
+ return banner()+`<h2>Evidence meter</h2><div class="card"><div class="bar" role="img" aria-label="Share of statements by evidence type">${['nasa','model','hyp'].map(k=>`<span style="width:${n[k]/tot*100}%;background:${col[k]}" data-tip="${nm[k]}: ${n[k]} of ${tot}"></span>`).join('')}</div>
+ <div class="legend">${['nasa','model','hyp'].map(k=>`<span><i style="background:${col[k]}"></i>${nm[k]} (${n[k]})</span>`).join('')}</div>
+ <p class="note">Counts statements used in this app. The model-prediction items are computed live from the data loaded now.</p></div>
+ <div class="card">${items.map(i=>`<p style="margin:10px 0"><span class="badge t-${i[0]}">${nm[i[0]]}</span><br>${esc(i[1])}</p>`).join('')}</div>
+ <div class="card"><h3 style="margin-top:0">Limitations</h3><ul><li>Not a diagnosis, prescription or individual risk estimate.</li><li>Mouse brain tissue after single-ion beams; space radiation is a mixed, low-dose-rate field.</li><li>OSD-611 has 13 samples, so cross-validated metrics are noisy; batch effects can dominate.</li><li>Absorbed dose per day is derived from an assumed quality factor.</li><li>Genes and pathways were chosen a priori; results are associations.</li></ul></div>`;}
+const RENDER={home:vHome,study:vStudy,data:vData,echo:vEcho,index:vIndex,gap:vGap,mission:vMission,evidence:vEvidence};
+function route(){const h=(location.hash||'#home').slice(1);return RENDER[h]?h:'home';}
+function render(){const r=route();document.getElementById('nav').innerHTML=VIEWS.map(v=>`<a href="#${v[0]}" class="${v[0]===r?'on':''}">${v[1]}</a>`).join('');
+ const el=document.getElementById('view');if(S.busy){el.innerHTML='<div class="busy">Computing… (t-tests, cross-validation, permutation test)</div>';return;}
+ el.innerHTML=RENDER[r]();wire(r);}
+function wire(r){
+ document.querySelectorAll('input[type=range]').forEach(i=>i.addEventListener('input',()=>{const k=i.dataset.k;S.sim[k]=+i.value;const keep=scrollY;render();scrollTo(0,keep);}));
+ const ts=document.getElementById('tsel');if(ts)ts.onchange=()=>{S.target=ts.value;recompute();};
+ const ex=document.getElementById('ex');if(ex)ex.onclick=()=>{loadDemo();location.hash='#echo';};const dm=document.getElementById('demo');if(dm)dm.onclick=clearData;
+ const go=document.getElementById('go');if(go)go.onclick=async()=>{const fe=document.getElementById('fe').files[0],fm=document.getElementById('fm').files[0];if(!fe||!fm){S.err='Choose both files first.';render();return;}
+  try{const ds=buildDataset(await fe.text(),await fm.text());S.ds=ds;S.demo=false;S.target=ds.cog?'cognition':'binary';location.hash='#echo';recompute();}catch(e){S.err=e.message;render();}};}
+addEventListener('hashchange',()=>{tip.style.display='none';render();scrollTo(0,0);});
+loadDemo();
+</script>
+
+</body></html>
