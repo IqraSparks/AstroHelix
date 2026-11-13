@@ -1,0 +1,30 @@
+# 📂 NASA Open Science Data Repository (OSDR) & Research Grounding
+
+The AstroHelix simulation framework is strictly grounded in validated space biology datasets sourced from the official NASA Open Science Data Repository (OSDR)[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span)[span_2](start_span)[span_2](end_span). Below are the primary databases, datasets, and biological references integrated into our model:
+
+## 🔗 Official NASA Data Repositories & General Portals
+* **NASA Open Science Data Repository (OSDR) Main Portal:** [https://osdr.nasa.gov/](https://osdr.nasa.gov/)[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)
+* **Primary Study Dataset (OSD-993 & OSD-611):** [Space radiation induces distinct senescent phenotypes: Implications for space travel [scRNA-Seq]](https://data.nasa.gov/dataset/space-radiation-induces-distinct-senescent-phenotypes-implications-for-space-travel-scrna-)[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)
+
+---
+
+## 🧬 Detailed NASA Study References & Parameters
+
+* **1. OSD-993 & OSD-611 (Cellular Senescence & Transcriptomics):**
+  * *Focus:* Analyzes human fibroblasts and space radiation responses, highlighting the accumulation of senescent cells (SnCs / SA-beta-gal+) and integrated stress pathway activations[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).
+  * *Access:* Directly referenced via [NASA OSDR Platform](https://osdr.nasa.gov/)[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span).
+
+* **2. OSD-479 (Behavioral & Cognitive Assays):**
+  * *Focus:* Multivariate principal components analysis measuring sex-dimorphic responses and impaired spatial learning in mouse models exposed to simulated Galactic Cosmic Radiation (GCRsim)[span_12](start_span)[span_12](end_span).
+
+* **3. OSD-777 (Neuroinflammation & Microglia):**
+  * *Focus:* Tracks chronic microglial activation and neuro-immune alterations within the hippocampus following high-energy charged particle exposure[span_13](start_span)[span_13](end_span).
+
+* **4. OSD-778 (Synaptic Alterations):**
+  * *Focus:* Maps structural hippocampal synaptic changes and neural plasticity degradation linked to deep space travel cognitive challenges[span_14](start_span)[span_14](end_span).
+
+---
+
+## ☢️ Radiation & Extremophile (Tardigrade) Benchmarks
+* **Mars Cruise Radiation Dose Rate:** Calibrated around baseline Galactic Cosmic Radiation (GCR) exposure parameters (~1.84 mSv/day)[span_15](start_span)[span_15](end_span).
+* **Biological Resilience Countermeasure:** Integration of the Tardigrade (*Ramazzottius varieornatus*) Damage Suppressor (`Dsup`) protein sequence reference (`UniProt A0A226NRR3`) as an extremophile model for chromatin protection against radiolytic cleavage[span_16](start_span)[span_16](end_span).
